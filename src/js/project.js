@@ -2,6 +2,43 @@
 
 const Project = (() => {
   let current = null;
+  let history = [];
+  let historyIndex = -1;
+  const MAX_HISTORY = 50;
+
+  function snapshot() {
+    if (!current) return;
+    history = history.slice(0, historyIndex + 1);
+    history.push(JSON.parse(JSON.stringify(current.tree)));
+    if (history.length > MAX_HISTORY) {
+      history.shift();
+    } else {
+      historyIndex++;
+    }
+  }
+
+  function resetHistory() {
+    history = [];
+    historyIndex = -1;
+    snapshot();
+  }
+
+  function canUndo() { return historyIndex > 0; }
+  function canRedo() { return historyIndex < history.length - 1; }
+
+  function undo() {
+    if (!canUndo()) return false;
+    historyIndex--;
+    current.tree = JSON.parse(JSON.stringify(history[historyIndex]));
+    return true;
+  }
+
+  function redo() {
+    if (!canRedo()) return false;
+    historyIndex++;
+    current.tree = JSON.parse(JSON.stringify(history[historyIndex]));
+    return true;
+  }
 
   function create({ name, cssFramework, codeFramework }) {
     current = {
@@ -14,6 +51,7 @@ const Project = (() => {
       tree: [],
       meta: {}
     };
+    resetHistory();
     return current;
   }
 
@@ -21,9 +59,14 @@ const Project = (() => {
 
   function set(project) {
     current = project;
+    resetHistory();
   }
 
-  function clear() { current = null; }
+  function clear() {
+    current = null;
+    history = [];
+    historyIndex = -1;
+  }
 
   function touch() {
     if (current) current.updatedAt = new Date().toISOString();
@@ -42,6 +85,7 @@ const Project = (() => {
       }
     }
     touch();
+    snapshot();
     return el;
   }
 
@@ -49,6 +93,7 @@ const Project = (() => {
     if (!current) return;
     current.tree = removeFromArray(current.tree, id);
     touch();
+    snapshot();
   }
 
   function removeFromArray(arr, id) {
@@ -77,6 +122,7 @@ const Project = (() => {
     if (el) {
       Object.assign(el, patch);
       touch();
+      snapshot();
     }
     return el;
   }
@@ -128,6 +174,7 @@ const Project = (() => {
       }
     }
     touch();
+    snapshot();
     return node;
   }
 
@@ -148,6 +195,7 @@ const Project = (() => {
     create, get, set, clear, touch,
     addElement, removeElement, findById, updateElement,
     moveElement, isAncestor,
+    undo, redo, canUndo, canRedo,
     serialize, deserialize
   };
 })();

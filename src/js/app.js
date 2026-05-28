@@ -43,6 +43,16 @@
     if (ctrl && ev.key.toLowerCase() === 'n') { ev.preventDefault(); openNewProject(); return; }
     if (ctrl && ev.key.toLowerCase() === 'o') { ev.preventDefault(); openProject(); return; }
     if (ctrl && ev.key.toLowerCase() === 'e') { ev.preventDefault(); exportProject(); return; }
+    if (ctrl && ev.key.toLowerCase() === 'z' && !ev.shiftKey) {
+      ev.preventDefault();
+      if (Project.undo()) { Canvas.render(); Properties.show(Canvas.selected); }
+      return;
+    }
+    if (ctrl && (ev.key.toLowerCase() === 'y' || (ev.key.toLowerCase() === 'z' && ev.shiftKey))) {
+      ev.preventDefault();
+      if (Project.redo()) { Canvas.render(); Properties.show(Canvas.selected); }
+      return;
+    }
     if (ev.key === 'F12') {
       ev.preventDefault();
       if (typeof nw !== 'undefined' && nw.Window && nw.Window.get) {
@@ -138,19 +148,21 @@
     const bar = $('menubar');
 
     bar.addEventListener('click', (ev) => {
-      const item = ev.target.closest('.menubar-item');
-      if (item) {
-        const isOpen = item.classList.contains('open');
-        bar.querySelectorAll('.menubar-item.open').forEach(i => i.classList.remove('open'));
-        if (!isOpen) item.classList.add('open');
+      const menuItem = ev.target.closest('.menu-item');
+      if (menuItem) {
         ev.stopPropagation();
+        if (menuItem.classList.contains('disabled')) return;
+        bar.querySelectorAll('.menubar-item.open').forEach(i => i.classList.remove('open'));
+        runMenuAction(menuItem.dataset.act);
         return;
       }
 
-      const menuItem = ev.target.closest('.menu-item');
-      if (menuItem && !menuItem.classList.contains('disabled')) {
+      const item = ev.target.closest('.menubar-item');
+      if (item) {
+        ev.stopPropagation();
+        const isOpen = item.classList.contains('open');
         bar.querySelectorAll('.menubar-item.open').forEach(i => i.classList.remove('open'));
-        runMenuAction(menuItem.dataset.act);
+        if (!isOpen) item.classList.add('open');
       }
     });
 
@@ -174,6 +186,20 @@
       case 'open': openProject(); break;
       case 'save': saveProject(); break;
       case 'export': exportProject(); break;
+      case 'undo':
+        if (Project.undo()) {
+          Canvas.render();
+          Properties.show(Canvas.selected);
+          toast('Undo', 'success');
+        }
+        break;
+      case 'redo':
+        if (Project.redo()) {
+          Canvas.render();
+          Properties.show(Canvas.selected);
+          toast('Redo', 'success');
+        }
+        break;
       case 'delete-selected':
         if (Canvas.selected) {
           Project.removeElement(Canvas.selected);
