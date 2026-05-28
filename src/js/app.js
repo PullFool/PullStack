@@ -26,20 +26,28 @@
   $('newProjectCreateBtn').addEventListener('click', createProject);
 
   $('saveProjectBtn').addEventListener('click', saveProject);
-  $('openProjectBtn').addEventListener('click', openProject);
   $('exportBtn').addEventListener('click', exportProject);
-  $('refreshBtn').addEventListener('click', refreshFrameworks);
+  setupMenuBar();
 
   document.addEventListener('keydown', (ev) => {
+    const ctrl = ev.ctrlKey || ev.metaKey;
+
     if (ev.key === 'Delete' && Canvas.selected) {
       Project.removeElement(Canvas.selected);
       Canvas.select(null);
       Canvas.render();
       Properties.show(null);
+      return;
     }
-    if ((ev.ctrlKey || ev.metaKey) && ev.key === 's') {
+    if (ctrl && ev.key.toLowerCase() === 's') { ev.preventDefault(); saveProject(); return; }
+    if (ctrl && ev.key.toLowerCase() === 'n') { ev.preventDefault(); openNewProject(); return; }
+    if (ctrl && ev.key.toLowerCase() === 'o') { ev.preventDefault(); openProject(); return; }
+    if (ctrl && ev.key.toLowerCase() === 'e') { ev.preventDefault(); exportProject(); return; }
+    if (ev.key === 'F12') {
       ev.preventDefault();
-      saveProject();
+      if (typeof nw !== 'undefined' && nw.Window && nw.Window.get) {
+        nw.Window.get().showDevTools();
+      }
     }
   });
 
@@ -120,9 +128,79 @@
 
   function enableActions() {
     $('saveProjectBtn').disabled = false;
-    $('previewBtn').disabled = false;
     $('exportBtn').disabled = false;
-    $('refreshBtn').disabled = false;
+    document.querySelectorAll('.menu-item[data-needs-project]').forEach(el => {
+      el.classList.remove('disabled');
+    });
+  }
+
+  function setupMenuBar() {
+    const bar = $('menubar');
+
+    bar.addEventListener('click', (ev) => {
+      const item = ev.target.closest('.menubar-item');
+      if (item) {
+        const isOpen = item.classList.contains('open');
+        bar.querySelectorAll('.menubar-item.open').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+        ev.stopPropagation();
+        return;
+      }
+
+      const menuItem = ev.target.closest('.menu-item');
+      if (menuItem && !menuItem.classList.contains('disabled')) {
+        bar.querySelectorAll('.menubar-item.open').forEach(i => i.classList.remove('open'));
+        runMenuAction(menuItem.dataset.act);
+      }
+    });
+
+    bar.addEventListener('mouseover', (ev) => {
+      const hasOpen = !!bar.querySelector('.menubar-item.open');
+      if (!hasOpen) return;
+      const item = ev.target.closest('.menubar-item');
+      if (!item || item.classList.contains('open')) return;
+      bar.querySelectorAll('.menubar-item.open').forEach(i => i.classList.remove('open'));
+      item.classList.add('open');
+    });
+
+    document.addEventListener('click', () => {
+      bar.querySelectorAll('.menubar-item.open').forEach(i => i.classList.remove('open'));
+    });
+  }
+
+  function runMenuAction(act) {
+    switch (act) {
+      case 'new': openNewProject(); break;
+      case 'open': openProject(); break;
+      case 'save': saveProject(); break;
+      case 'export': exportProject(); break;
+      case 'delete-selected':
+        if (Canvas.selected) {
+          Project.removeElement(Canvas.selected);
+          Canvas.select(null);
+          Canvas.render();
+          Properties.show(null);
+        }
+        break;
+      case 'reload-window':
+        location.reload();
+        break;
+      case 'devtools':
+        if (typeof nw !== 'undefined' && nw.Window && nw.Window.get) {
+          nw.Window.get().showDevTools();
+        }
+        break;
+      case 'update-frameworks':
+      case 'reload-frameworks':
+        refreshFrameworks();
+        break;
+      case 'about':
+        toast('PullStack v0.1.0 — drag-and-drop page builder', 'success');
+        break;
+      case 'docs':
+        toast('Docs coming soon at github.com/PullFool/PullStack', 'success');
+        break;
+    }
   }
 
   async function refreshFrameworks() {

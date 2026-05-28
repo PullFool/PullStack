@@ -18,16 +18,62 @@
     </svg>
     <span class="brand-name">PullStack</span>
   </div>
+
+  <nav class="menubar" id="menubar">
+    <div class="menubar-item" data-menu="file">
+      File
+      <div class="menu-dropdown">
+        <div class="menu-item" data-act="new"><span>＋ New project</span><span class="shortcut">Ctrl+N</span></div>
+        <div class="menu-item" data-act="open"><span>📂 Open...</span><span class="shortcut">Ctrl+O</span></div>
+        <div class="menu-item disabled" data-act="save" data-needs-project="1"><span>💾 Save</span><span class="shortcut">Ctrl+S</span></div>
+        <div class="menu-separator"></div>
+        <div class="menu-item disabled" data-act="export" data-needs-project="1"><span>📤 Export...</span><span class="shortcut">Ctrl+E</span></div>
+      </div>
+    </div>
+
+    <div class="menubar-item" data-menu="edit">
+      Edit
+      <div class="menu-dropdown">
+        <div class="menu-item disabled" data-act="undo"><span>↶ Undo</span><span class="shortcut">Ctrl+Z</span></div>
+        <div class="menu-item disabled" data-act="redo"><span>↷ Redo</span><span class="shortcut">Ctrl+Y</span></div>
+        <div class="menu-separator"></div>
+        <div class="menu-item" data-act="delete-selected"><span>🗑 Delete selected</span><span class="shortcut">Del</span></div>
+      </div>
+    </div>
+
+    <div class="menubar-item" data-menu="view">
+      View
+      <div class="menu-dropdown">
+        <div class="menu-item disabled" data-act="preview" data-needs-project="1"><span>▶ Preview mode</span><span class="shortcut">F5</span></div>
+        <div class="menu-item" data-act="reload-window"><span>↻ Reload window</span><span class="shortcut">Ctrl+R</span></div>
+        <div class="menu-item" data-act="devtools"><span>🛠 DevTools</span><span class="shortcut">F12</span></div>
+      </div>
+    </div>
+
+    <div class="menubar-item" data-menu="tools">
+      Tools
+      <div class="menu-dropdown">
+        <div class="menu-item disabled" data-act="update-frameworks" data-needs-project="1"><span>⤓ Check for framework updates</span></div>
+        <div class="menu-item disabled" data-act="reload-frameworks" data-needs-project="1"><span>↻ Reload framework files</span></div>
+      </div>
+    </div>
+
+    <div class="menubar-item" data-menu="help">
+      Help
+      <div class="menu-dropdown">
+        <div class="menu-item" data-act="about"><span>ℹ About PullStack</span></div>
+        <div class="menu-item" data-act="docs"><span>📖 Documentation</span></div>
+      </div>
+    </div>
+  </nav>
+
   <div class="header-meta" id="projectMeta">
     <span class="meta-label">No project</span>
   </div>
-  <div class="header-actions">
-    <button class="hbtn" id="newProjectBtn">＋ New</button>
-    <button class="hbtn" id="openProjectBtn">📂 Open</button>
-    <button class="hbtn" id="saveProjectBtn" disabled>💾 Save</button>
-    <button class="hbtn" id="refreshBtn" disabled title="Check for framework definition updates">⤓ Update</button>
-    <button class="hbtn" id="previewBtn" disabled>▶ Preview</button>
-    <button class="hbtn primary" id="exportBtn" disabled>📤 Export</button>
+
+  <div class="header-quick-actions">
+    <button class="hbtn" id="saveProjectBtn" disabled title="Save (Ctrl+S)">💾</button>
+    <button class="hbtn primary" id="exportBtn" disabled title="Export (Ctrl+E)">📤 Export</button>
   </div>
 </header>
 

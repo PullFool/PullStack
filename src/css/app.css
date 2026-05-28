@@ -44,8 +44,8 @@ input, select, textarea {
   height: var(--header-h);
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 0 16px;
+  gap: 12px;
+  padding: 0 12px;
   background: var(--bg-1);
   border-bottom: 1px solid var(--border);
   -webkit-app-region: drag;
@@ -54,14 +54,15 @@ input, select, textarea {
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  -webkit-app-region: drag;
 }
 .brand-icon {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
 }
 .brand-name {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   background: linear-gradient(90deg, var(--accent-2), var(--accent), var(--accent-3));
   -webkit-background-clip: text;
@@ -69,17 +70,88 @@ input, select, textarea {
   background-clip: text;
 }
 
+.menubar {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+.menubar-item {
+  position: relative;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: default;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  border-radius: 4px;
+  transition: background 0.1s;
+}
+.menubar-item:hover,
+.menubar-item.open {
+  background: var(--bg-3);
+}
+.menubar-item.open {
+  background: var(--bg-3);
+}
+.menu-dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  display: none;
+  background: var(--bg-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  min-width: 240px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  padding: 4px 0;
+  z-index: 1000;
+}
+.menubar-item.open .menu-dropdown {
+  display: block;
+}
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  gap: 16px;
+}
+.menu-item:hover:not(.disabled) {
+  background: var(--bg-3);
+}
+.menu-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.menu-item .shortcut {
+  opacity: 0.5;
+  font-size: 11px;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.menu-separator {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
 .header-meta {
   flex: 1;
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-dim);
+  -webkit-app-region: drag;
+  padding: 0 12px;
 }
 .meta-label { opacity: 0.6; }
 
-.header-actions {
+.header-quick-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   -webkit-app-region: no-drag;
 }
 
