@@ -78,6 +78,7 @@ const Canvas = (() => {
     if (!frameDoc) return;
 
     let lastHover = null;
+    let draggingId = null;
 
     function clearHover() {
       if (lastHover) {
@@ -93,11 +94,31 @@ const Canvas = (() => {
       return null;
     }
 
+    frameDoc.addEventListener('dragstart', (ev) => {
+      const elWrap = ev.target.closest('[data-ps-el]');
+      if (!elWrap) return;
+      draggingId = elWrap.dataset.psEl;
+      ev.dataTransfer.setData('application/x-pullstack-move', draggingId);
+      ev.dataTransfer.effectAllowed = 'move';
+      elWrap.style.opacity = '0.4';
+    });
+
+    frameDoc.addEventListener('dragend', (ev) => {
+      const elWrap = ev.target.closest('[data-ps-el]');
+      if (elWrap) elWrap.style.opacity = '';
+      draggingId = null;
+      clearHover();
+    });
+
     frameDoc.addEventListener('dragover', (ev) => {
       const drop = findDropTarget(ev);
       if (!drop) return;
+      if (draggingId) {
+        if (drop.parentId === draggingId) return;
+        if (drop.parentId && Project.isAncestor(draggingId, drop.parentId)) return;
+      }
       ev.preventDefault();
-      ev.dataTransfer.dropEffect = 'copy';
+      ev.dataTransfer.dropEffect = draggingId ? 'move' : 'copy';
       if (lastHover !== drop.el) {
         clearHover();
         lastHover = drop.el;
@@ -114,10 +135,22 @@ const Canvas = (() => {
 
     frameDoc.addEventListener('drop', (ev) => {
       ev.preventDefault();
-      const elType = ev.dataTransfer.getData('application/x-pullstack-element');
       const drop = findDropTarget(ev);
       clearHover();
-      if (!elType || !drop) return;
+      if (!drop) return;
+
+      const moveId = ev.dataTransfer.getData('application/x-pullstack-move');
+      if (moveId) {
+        const moved = Project.moveElement(moveId, drop.parentId);
+        if (moved) {
+          render();
+          select(moveId);
+        }
+        return;
+      }
+
+      const elType = ev.dataTransfer.getData('application/x-pullstack-element');
+      if (!elType) return;
       const el = Project.addElement({ type: elType, props: defaultPropsFor(elType) }, drop.parentId);
       if (el) {
         render();
@@ -225,7 +258,7 @@ const Canvas = (() => {
         inner = `<div${clsPart}${stylePart}>${escape(el.type)}</div>`;
     }
     const selectedAttr = el.id === selectedId ? ' class="is-selected"' : '';
-    return `<div data-ps-el="${el.id}"${selectedAttr}>${inner}</div>`;
+    return `<div data-ps-el="${el.id}" draggable="true"${selectedAttr}>${inner}</div>`;
   }
 
   function render() {

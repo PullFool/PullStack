@@ -81,6 +81,56 @@ const Project = (() => {
     return el;
   }
 
+  function detach(id) {
+    if (!current) return null;
+    let found = null;
+    function recurse(arr) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].id === id) {
+          found = arr.splice(i, 1)[0];
+          return;
+        }
+        if (arr[i].children) recurse(arr[i].children);
+        if (found) return;
+      }
+    }
+    recurse(current.tree);
+    return found;
+  }
+
+  function isAncestor(possibleAncestorId, descendantId) {
+    const node = findById(possibleAncestorId);
+    if (!node || !node.children) return false;
+    const walk = (arr) => {
+      for (const c of arr) {
+        if (c.id === descendantId) return true;
+        if (c.children && walk(c.children)) return true;
+      }
+      return false;
+    };
+    return walk(node.children);
+  }
+
+  function moveElement(id, newParentId) {
+    if (!current || id === newParentId) return null;
+    if (newParentId && isAncestor(id, newParentId)) return null;
+    const node = detach(id);
+    if (!node) return null;
+    if (!newParentId) {
+      current.tree.push(node);
+    } else {
+      const parent = findById(newParentId);
+      if (!parent) {
+        current.tree.push(node);
+      } else {
+        parent.children = parent.children || [];
+        parent.children.push(node);
+      }
+    }
+    touch();
+    return node;
+  }
+
   function serialize() {
     return JSON.stringify(current, null, 2);
   }
@@ -97,6 +147,7 @@ const Project = (() => {
   return {
     create, get, set, clear, touch,
     addElement, removeElement, findById, updateElement,
+    moveElement, isAncestor,
     serialize, deserialize
   };
 })();
