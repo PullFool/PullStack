@@ -10,3 +10,5 @@ Thumbs.db
 dist/
 build/
 *.nw.zip
+
+nwjs-*.zip
