@@ -301,6 +301,18 @@
     toast(`Exported as ${result.filename}`, 'success');
   }
 
+  async function exportProjectZip() {
+    const p = Project.get();
+    if (!p) return;
+    try {
+      const result = await Exporter.exportProjectZip(p);
+      Exporter.download(result.filename, result.blob);
+      toast(`ZIP exported: ${result.filename}`, 'success');
+    } catch (e) {
+      toast('ZIP export failed: ' + e.message, 'error');
+    }
+  }
+
   function enableActions() {
     $('saveProjectBtn').disabled = false;
     $('exportBtn').disabled = false;
@@ -354,6 +366,7 @@
       case 'save': saveProject(); break;
       case 'save-as': saveProjectAs(); break;
       case 'export': exportProject(); break;
+      case 'export-zip': exportProjectZip(); break;
       case 'close-project': closeProject(); break;
       case 'undo':
         if (Project.undo()) {
