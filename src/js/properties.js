@@ -196,6 +196,20 @@ const Properties = (() => {
       update(el.id, 'onClick', { action: 'page', target: targetSelect.value });
     });
 
+    const tryBtn = document.createElement('button');
+    tryBtn.type = 'button';
+    tryBtn.className = 'hbtn';
+    tryBtn.textContent = '▶ Try this action';
+    tryBtn.style.cssText = 'margin-top:8px;width:100%;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.5);font-size:12px;font-weight:600;';
+    tryBtn.addEventListener('click', () => {
+      const action = sel.value;
+      const target = action === 'page' ? targetSelect.value : targetInput.value;
+      if (typeof window.PullStackTryAction === 'function') {
+        window.PullStackTryAction(action, target);
+      }
+    });
+    wrap.appendChild(tryBtn);
+
     return wrap;
   }
 

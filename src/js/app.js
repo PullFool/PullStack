@@ -483,6 +483,44 @@
     }
   };
 
+  window.PullStackTryAction = function (action, target) {
+    if (!action || action === 'none') {
+      toast('No action set', 'error');
+      return;
+    }
+    if (action === 'page') {
+      window.PullStackPreview.gotoPage(target);
+      return;
+    }
+    if (action === 'url') {
+      toast(`Would navigate to: ${target}`, 'success');
+      return;
+    }
+    const frame = document.getElementById('canvasFrame');
+    const doc = frame && frame.contentDocument;
+    if (!doc) {
+      toast('Canvas not ready', 'error');
+      return;
+    }
+    const targetEl = doc.getElementById(target);
+    if (!targetEl) {
+      toast(`Target "${target}" not found on canvas`, 'error');
+      return;
+    }
+    if (action === 'open-modal') {
+      targetEl.style.display = 'flex';
+      toast(`Opened modal: ${target}`, 'success');
+    } else if (action === 'close-modal') {
+      targetEl.style.display = 'none';
+      toast(`Closed modal: ${target}`, 'success');
+    } else if (action === 'toggle') {
+      targetEl.style.display = targetEl.style.display === 'none' ? '' : 'none';
+      toast(`Toggled: ${target}`, 'success');
+    } else if (action === 'scroll') {
+      targetEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   let clipboard = null;
 
   function copySelected() {
