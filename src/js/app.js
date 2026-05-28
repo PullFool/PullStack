@@ -20,7 +20,6 @@
   populateSelect('cssFrameworkSelect', cssOptions, 'tailwind');
   populateSelect('codeFrameworkSelect', codeOptions, 'html');
 
-  $('newProjectBtn').addEventListener('click', openNewProject);
   $('canvasEmptyCta')?.addEventListener('click', openNewProject);
   $('newProjectCancelBtn').addEventListener('click', closeNewProject);
   $('newProjectCreateBtn').addEventListener('click', createProject);
