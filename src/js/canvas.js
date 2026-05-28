@@ -10,6 +10,7 @@ const Canvas = (() => {
   let cssDefs = {};
   let currentCdn = '';
   let previewMode = false;
+  const collapsedModals = new Set();
 
   function setPreviewMode(on) {
     previewMode = !!on;
@@ -184,6 +185,15 @@ const Canvas = (() => {
     });
 
     frameDoc.addEventListener('click', (ev) => {
+      const toggle = ev.target.closest('[data-ps-modal-toggle]');
+      if (toggle && !ev.target.closest('.ps-modal-close')) {
+        const id = toggle.dataset.psModalToggle;
+        if (collapsedModals.has(id)) collapsedModals.delete(id);
+        else collapsedModals.add(id);
+        render();
+        ev.stopPropagation();
+        return;
+      }
       const target = ev.target.closest('[data-ps-el]');
       if (target) {
         select(target.dataset.psEl);
@@ -327,13 +337,17 @@ const Canvas = (() => {
         const children = (el.children || []).map(c => renderElementHtml(c)).join('');
         const modalCls = cssDefs.modal || '';
         const modalId = escape(p.modalId || '');
+        const isCollapsed = collapsedModals.has(el.id);
+        const bodyStyle = isCollapsed ? 'display:none;' : 'padding:16px;min-height:60px;';
+        const caret = isCollapsed ? '▶' : '▼';
+        const borderRadius = isCollapsed ? '8px' : '8px 8px 0 0';
         inner = `
-          <div data-ps-modal-wrap id="${modalId}" style="margin:16px 0;padding:0;border:2px dashed rgba(192,132,252,0.5);border-radius:10px;background:#fff;">
-            <div class="ps-modal-chrome" style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(192,132,252,0.15);border-radius:8px 8px 0 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#c084fc;">
-              <span>🪟 Modal · id="${modalId}"<span class="ps-modal-close" onclick="this.closest('[data-ps-modal-wrap]').classList.remove('ps-showing')">✕</span></span>
+          <div data-ps-modal-wrap id="${modalId}" data-modal-el-id="${el.id}" style="margin:16px 0;padding:0;border:2px dashed rgba(192,132,252,0.5);border-radius:10px;background:#fff;">
+            <div class="ps-modal-chrome" data-ps-modal-toggle="${el.id}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(192,132,252,0.15);border-radius:${borderRadius};font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#c084fc;cursor:pointer;">
+              <span><span style="display:inline-block;width:14px;font-size:9px;">${caret}</span>🪟 Modal · id="${modalId}"<span class="ps-modal-close" onclick="event.stopPropagation();this.closest('[data-ps-modal-wrap]').classList.remove('ps-showing')">✕</span></span>
               <span style="font-size:11px;font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7;">${escape(p.title || '')}</span>
             </div>
-            <div class="ps-modal-body ${modalCls}" data-ps-container="${el.id}" style="padding:16px;min-height:60px;">${children}</div>
+            <div class="ps-modal-body ${modalCls}" data-ps-container="${el.id}" style="${bodyStyle}">${children}</div>
           </div>
         `;
         break;
