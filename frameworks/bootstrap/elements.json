@@ -20,6 +20,8 @@
     { "label": "Warning", "color": "#ffc107", "class": "btn btn-warning" },
     { "label": "Info", "color": "#0dcaf0", "class": "btn btn-info" },
     { "label": "Light", "color": "#f8f9fa", "class": "btn btn-light" },
-    { "label": "Dark", "color": "#212529", "class": "btn btn-dark" }
+    { "label": "Dark", "color": "#212529", "class": "btn btn-dark" },
+    { "label": "Outline Primary", "color": "#ffffff", "class": "btn btn-outline-primary" },
+    { "label": "Outline Success", "color": "#ffffff", "class": "btn btn-outline-success" }
   ]
 }
