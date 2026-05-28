@@ -129,6 +129,20 @@ function toggleElement(id){var el=document.getElementById(id);if(el){el.style.di
         return `<hr${classAttr}${styleAttr} />`;
       case 'input':
         return `<input type="${esc(p.type || 'text')}" placeholder="${esc(p.placeholder)}"${classAttr} />`;
+      case 'form': {
+        const inner = (el.children || []).map(c => renderElement(c, cssDefs, features)).join('\n');
+        return `<form action="${esc(p.action || '#')}" method="${esc(p.method || 'POST')}"${classAttr}${styleAttr}>\n${inner}\n</form>`;
+      }
+      case 'textarea':
+        return `<textarea${classAttr}${styleAttr}${p.name ? ` name="${esc(p.name)}"` : ''} rows="${p.rows || 4}" placeholder="${esc(p.placeholder)}"></textarea>`;
+      case 'checkbox':
+        return `<label><input type="checkbox"${p.name ? ` name="${esc(p.name)}"` : ''}${p.checked ? ' checked' : ''} /> ${esc(p.label || '')}</label>`;
+      case 'radio':
+        return `<label><input type="radio"${p.name ? ` name="${esc(p.name)}"` : ''}${p.value ? ` value="${esc(p.value)}"` : ''}${p.checked ? ' checked' : ''} /> ${esc(p.label || '')}</label>`;
+      case 'select': {
+        const opts = (p.options || []).map(o => `<option>${esc(o)}</option>`).join('\n');
+        return `<select${classAttr}${styleAttr}${p.name ? ` name="${esc(p.name)}"` : ''}>\n${opts}\n</select>`;
+      }
       case 'modal': {
         features.needsModalJs = true;
         const inner = (el.children || []).map(c => renderElement(c, cssDefs, features)).join('\n');

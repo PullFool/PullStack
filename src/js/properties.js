@@ -67,6 +67,30 @@ const Properties = (() => {
         fields.push(textField('Modal ID', p.modalId, v => update(el.id, 'modalId', v)));
         fields.push(checkboxField('Dismissable (close on overlay click)', p.dismissable !== false, v => update(el.id, 'dismissable', v)));
         break;
+      case 'form':
+        fields.push(textField('Action URL', p.action, v => update(el.id, 'action', v)));
+        fields.push(selectField('Method', p.method || 'POST', ['GET', 'POST'], v => update(el.id, 'method', v)));
+        break;
+      case 'textarea':
+        fields.push(textField('Placeholder', p.placeholder, v => update(el.id, 'placeholder', v)));
+        fields.push(textField('Name attribute', p.name, v => update(el.id, 'name', v)));
+        fields.push(selectField('Rows', String(p.rows || 4), ['2', '3', '4', '5', '6', '8', '10'], v => update(el.id, 'rows', parseInt(v, 10))));
+        break;
+      case 'checkbox':
+        fields.push(textField('Label', p.label, v => update(el.id, 'label', v)));
+        fields.push(textField('Name attribute', p.name, v => update(el.id, 'name', v)));
+        fields.push(checkboxField('Checked by default', !!p.checked, v => update(el.id, 'checked', v)));
+        break;
+      case 'radio':
+        fields.push(textField('Label', p.label, v => update(el.id, 'label', v)));
+        fields.push(textField('Group name', p.name, v => update(el.id, 'name', v)));
+        fields.push(textField('Value', p.value, v => update(el.id, 'value', v)));
+        fields.push(checkboxField('Checked by default', !!p.checked, v => update(el.id, 'checked', v)));
+        break;
+      case 'select':
+        fields.push(textField('Name attribute', p.name, v => update(el.id, 'name', v)));
+        fields.push(textareaField('Options (one per line)', (p.options || []).join('\n'), v => update(el.id, 'options', v.split('\n').map(s => s.trim()).filter(Boolean))));
+        break;
     }
 
     fields.push(classField(el));

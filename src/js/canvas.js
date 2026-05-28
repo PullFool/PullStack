@@ -180,6 +180,11 @@ const Canvas = (() => {
       case 'divider': return {};
       case 'input': return { placeholder: 'Enter text...', type: 'text' };
       case 'modal': return { title: 'Modal title', modalId: 'modal_' + Math.random().toString(36).slice(2, 8), dismissable: true };
+      case 'form': return { action: '/submit', method: 'POST' };
+      case 'textarea': return { placeholder: 'Your message...', rows: 4, name: '' };
+      case 'checkbox': return { label: 'I agree', name: '', checked: false };
+      case 'radio': return { label: 'Option', name: 'group1', value: 'option1', checked: false };
+      case 'select': return { name: '', options: ['Option 1', 'Option 2', 'Option 3'] };
       default: return {};
     }
   }
@@ -248,6 +253,25 @@ const Canvas = (() => {
       case 'container': {
         const children = (el.children || []).map(c => renderElementHtml(c)).join('');
         inner = `<div${clsPart}${stylePart} data-ps-container="${el.id}">${children}</div>`;
+        break;
+      }
+      case 'form': {
+        const children = (el.children || []).map(c => renderElementHtml(c)).join('');
+        inner = `<form${clsPart}${stylePart} data-ps-container="${el.id}" onsubmit="event.preventDefault()">${children}</form>`;
+        break;
+      }
+      case 'textarea':
+        inner = `<textarea${clsPart}${stylePart} rows="${p.rows || 4}" placeholder="${escape(p.placeholder)}"></textarea>`;
+        break;
+      case 'checkbox':
+        inner = `<label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox"${p.checked ? ' checked' : ''} /><span>${escape(p.label || '')}</span></label>`;
+        break;
+      case 'radio':
+        inner = `<label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;"><input type="radio" name="${escape(p.name || '')}"${p.checked ? ' checked' : ''} /><span>${escape(p.label || '')}</span></label>`;
+        break;
+      case 'select': {
+        const opts = (p.options || []).map(o => `<option>${escape(o)}</option>`).join('');
+        inner = `<select${clsPart}${stylePart}>${opts}</select>`;
         break;
       }
       case 'modal': {

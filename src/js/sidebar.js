@@ -9,8 +9,13 @@ const Sidebar = (() => {
     { type: 'image', label: 'Image', icon: '🖼' },
     { type: 'container', label: 'Container', icon: '▢' },
     { type: 'divider', label: 'Divider', icon: '—' },
+    { type: 'modal', label: 'Modal', icon: '🪟' },
+    { type: 'form', label: 'Form', icon: '📋' },
     { type: 'input', label: 'Input', icon: '⌨' },
-    { type: 'modal', label: 'Modal', icon: '🪟' }
+    { type: 'textarea', label: 'Textarea', icon: '📝' },
+    { type: 'checkbox', label: 'Checkbox', icon: '☑' },
+    { type: 'radio', label: 'Radio', icon: '🔘' },
+    { type: 'select', label: 'Select', icon: '▼' }
   ];
 
   function render(target) {
