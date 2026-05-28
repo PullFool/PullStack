@@ -301,27 +301,81 @@
   $('previewExitBtn')?.addEventListener('click', exitPreview);
   $('aboutCloseBtn')?.addEventListener('click', () => $('aboutModal').classList.remove('active'));
   $('shortcutsCloseBtn')?.addEventListener('click', () => $('shortcutsModal').classList.remove('active'));
+  function showStatus({ icon, title, message, progress, showClose, autoClose }) {
+    const modal = $('statusModal');
+    if (icon !== undefined) $('statusIcon').textContent = icon;
+    if (title !== undefined) $('statusTitle').textContent = title;
+    if (message !== undefined) $('statusMessage').textContent = message;
+    if (progress !== undefined) {
+      $('statusProgressWrap').style.display = progress === null ? 'none' : 'block';
+      if (progress !== null) $('statusProgressBar').style.width = progress + '%';
+    }
+    $('statusCloseBtn').style.display = showClose ? 'block' : 'none';
+    modal.classList.add('active');
+    if (autoClose) {
+      setTimeout(() => modal.classList.remove('active'), autoClose);
+    }
+  }
+
+  function closeStatus() {
+    $('statusModal').classList.remove('active');
+  }
+
+  $('statusCloseBtn')?.addEventListener('click', closeStatus);
+
   async function checkCloudUpdates() {
-    toast('Checking for framework updates...', 'success');
+    showStatus({
+      icon: '⤓',
+      title: 'Checking for updates',
+      message: 'Reaching the framework registry on GitHub...',
+      progress: 10,
+      showClose: false
+    });
 
     let result;
     try {
       result = await Updater.checkUpdates();
     } catch (e) {
-      toast('Could not reach registry: ' + e.message, 'error');
+      showStatus({
+        icon: '⚠',
+        title: 'Could not reach registry',
+        message: e.message,
+        progress: null,
+        showClose: true
+      });
       return;
     }
 
     if (!result.updates.length) {
-      toast('Everything is up to date ✓', 'success');
+      showStatus({
+        icon: '✓',
+        title: 'Up to date',
+        message: `All frameworks and exporters match registry v${result.registry.registryVersion} (${result.registry.updatedAt}).`,
+        progress: 100,
+        showClose: true,
+        autoClose: 2200
+      });
       return;
     }
 
+    const total = result.updates.length;
     let installed = 0;
     let failed = 0;
-    toast(`Found ${result.updates.length} update(s) — installing...`, 'success');
 
-    for (const u of result.updates) {
+    showStatus({
+      icon: '⬇',
+      title: `Installing ${total} update${total > 1 ? 's' : ''}`,
+      message: 'Downloading files from GitHub...',
+      progress: 15,
+      showClose: false
+    });
+
+    for (let i = 0; i < total; i++) {
+      const u = result.updates[i];
+      showStatus({
+        message: `${u.name} (${i + 1}/${total}) · ${u.localVer} → ${u.remoteVer}`,
+        progress: 15 + Math.round((i / total) * 80)
+      });
       try {
         await Updater.applyUpdate(u);
         installed++;
@@ -338,9 +392,21 @@
     }
 
     if (failed === 0) {
-      toast(`✓ Installed ${installed} update(s)`, 'success');
+      showStatus({
+        icon: '✓',
+        title: 'Updates installed',
+        message: `${installed} framework${installed > 1 ? 's' : ''} updated successfully.`,
+        progress: 100,
+        showClose: true
+      });
     } else {
-      toast(`Installed ${installed}, ${failed} failed`, 'error');
+      showStatus({
+        icon: '⚠',
+        title: 'Some updates failed',
+        message: `Installed ${installed}, ${failed} failed. Check Tools menu later to retry.`,
+        progress: 100,
+        showClose: true
+      });
     }
   }
 

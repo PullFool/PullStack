@@ -169,6 +169,18 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="statusModal">
+  <div class="modal" style="max-width:380px;text-align:center;">
+    <div id="statusIcon" style="font-size:54px;margin-bottom:14px;line-height:1;">⤓</div>
+    <div id="statusTitle" style="font-size:18px;font-weight:700;margin-bottom:6px;">Checking...</div>
+    <div id="statusMessage" style="font-size:13px;opacity:0.7;margin-bottom:18px;line-height:1.5;">Reaching the framework registry...</div>
+    <div id="statusProgressWrap" style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:18px;">
+      <div id="statusProgressBar" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition:width 0.25s;"></div>
+    </div>
+    <button class="btn-primary" id="statusCloseBtn" style="width:100%;display:none;">Close</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="shortcutsModal">
   <div class="modal" style="max-width:480px;">
     <h2 class="modal-title">Keyboard shortcuts</h2>
