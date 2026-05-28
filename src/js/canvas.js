@@ -378,7 +378,22 @@ const Canvas = (() => {
       return;
     }
     frameRoot.className = '';
-    frameRoot.innerHTML = project.tree.map(el => renderElementHtml(el)).join('');
+
+    const topLevelModals = project.tree.filter(el => el.type === 'modal');
+    const nonModals = project.tree.filter(el => el.type !== 'modal');
+
+    let html = nonModals.map(el => renderElementHtml(el)).join('');
+    if (topLevelModals.length) {
+      html += `
+        <div class="ps-modals-pinned" style="margin-top:32px;padding-top:16px;border-top:1px dashed rgba(192,132,252,0.35);">
+          <div style="font-size:10px;color:#c084fc;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:6px;">
+            Modals in this page <span style="opacity:0.6;font-weight:500;">(${topLevelModals.length})</span>
+          </div>
+          ${topLevelModals.map(el => renderElementHtml(el)).join('')}
+        </div>
+      `;
+    }
+    frameRoot.innerHTML = html;
   }
 
   function showEmptyState(hasProject) {
