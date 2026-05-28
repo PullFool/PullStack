@@ -230,6 +230,13 @@ input, select, textarea {
   line-height: 1.5;
 }
 
+.layer-row:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+.layer-row.is-selected {
+  background: rgba(192, 132, 252, 0.2) !important;
+}
+
 .element-palette {
   display: grid;
   grid-template-columns: 1fr 1fr;

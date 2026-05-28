@@ -6,12 +6,42 @@
   Properties.init('propertiesBody', {
     onChange: (evt) => {
       Canvas.render();
+      Layers.render(Canvas.selected);
       if (evt.type === 'remove') Canvas.select(null);
     }
   });
 
   Canvas.init('canvas', {
-    onSelect: (id) => Properties.show(id)
+    onSelect: (id) => {
+      Properties.show(id);
+      Layers.render(id);
+    }
+  });
+
+  Layers.init('layersBody', {
+    onSelect: (id) => {
+      Canvas.select(id);
+      Properties.show(id);
+    }
+  });
+  Layers.attachEvents();
+
+  const _origCanvasRender = Canvas.render.bind(Canvas);
+  Canvas.render = function () {
+    _origCanvasRender();
+    Layers.render(Canvas.selected);
+  };
+
+  $('layersToggleBtn')?.addEventListener('click', () => {
+    const body = $('layersBody');
+    const btn = $('layersToggleBtn');
+    if (body.style.display === 'none') {
+      body.style.display = '';
+      btn.textContent = 'Hide';
+    } else {
+      body.style.display = 'none';
+      btn.textContent = 'Show';
+    }
   });
 
   const cssOptions = await Exporter.listFrameworks();

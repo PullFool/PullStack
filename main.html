@@ -119,6 +119,14 @@
   </section>
 
   <aside class="properties" id="properties">
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>Layers</span>
+      <button class="hbtn" id="layersToggleBtn" style="font-size:10px;padding:2px 8px;">Hide</button>
+    </div>
+    <div id="layersBody" style="max-height:250px;overflow-y:auto;margin-bottom:12px;padding-right:4px;">
+      <div class="empty-state" style="padding:12px;">No elements yet</div>
+    </div>
+
     <div class="panel-title">Properties</div>
     <div class="properties-body" id="propertiesBody">
       <div class="empty-state">Select an element to edit its properties</div>
@@ -215,6 +223,7 @@
 <script src="src/js/properties.js"></script>
 <script src="src/js/exporter.js"></script>
 <script src="src/js/updater.js"></script>
+<script src="src/js/layers.js"></script>
 <script src="src/js/app.js"></script>
 </body>
 </html>
