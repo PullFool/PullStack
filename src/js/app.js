@@ -7,6 +7,7 @@
     onChange: (evt) => {
       Canvas.render();
       Layers.render(Canvas.selected);
+      renderPages();
       if (evt.type === 'remove') Canvas.select(null);
     }
   });
@@ -30,6 +31,7 @@
   Canvas.render = function () {
     _origCanvasRender();
     Layers.render(Canvas.selected);
+    renderPages();
   };
 
   let codeViewOn = false;
@@ -71,12 +73,15 @@
     }
     list.innerHTML = '';
     p.pages.forEach(page => {
+      const modals = Project.getModalsForPage(page.id);
+      const isActivePage = page.id === p.activePageId;
+      const isPageRowActive = isActivePage && !p.activeModalId;
+
       const row = document.createElement('div');
-      const isActive = page.id === p.activePageId;
       row.style.cssText = `
         display:flex;align-items:center;gap:6px;padding:6px 10px;font-size:12px;
-        border-radius:6px;margin-bottom:3px;cursor:pointer;
-        ${isActive ? 'background:rgba(192,132,252,0.2);color:#fff;font-weight:600;' : 'color:rgba(255,255,255,0.7);'}
+        border-radius:6px;margin-bottom:2px;cursor:pointer;
+        ${isPageRowActive ? 'background:rgba(192,132,252,0.2);color:#fff;font-weight:600;' : 'color:rgba(255,255,255,0.7);'}
       `;
       row.innerHTML = `
         <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">📄 ${escape(page.name)}</span>
@@ -85,14 +90,35 @@
       `;
       row.addEventListener('click', (ev) => {
         if (ev.target.closest('[data-rename-page]') || ev.target.closest('[data-remove-page]')) return;
-        if (isActive) return;
         Project.setActivePage(page.id);
+        Project.setActiveModal(null);
         Canvas.select(null);
         Canvas.render();
         Properties.show(null);
         renderPages();
       });
       list.appendChild(row);
+
+      modals.forEach(modal => {
+        const isActiveModal = isActivePage && p.activeModalId === modal.id;
+        const mRow = document.createElement('div');
+        mRow.style.cssText = `
+          display:flex;align-items:center;gap:6px;padding:5px 10px 5px 26px;font-size:11px;
+          border-radius:6px;margin-bottom:2px;cursor:pointer;
+          ${isActiveModal ? 'background:rgba(192,132,252,0.2);color:#fff;font-weight:600;' : 'color:rgba(255,255,255,0.6);'}
+        `;
+        const label = modal.props.title || modal.props.modalId || 'modal';
+        mRow.innerHTML = `<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">🪟 ${escape(label)}</span>`;
+        mRow.addEventListener('click', () => {
+          Project.setActivePage(page.id);
+          Project.setActiveModal(modal.id);
+          Canvas.select(null);
+          Canvas.render();
+          Properties.show(null);
+          renderPages();
+        });
+        list.appendChild(mRow);
+      });
     });
 
     list.querySelectorAll('[data-rename-page]').forEach(btn => {

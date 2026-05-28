@@ -107,8 +107,27 @@ const Project = (() => {
     const page = current.pages.find(p => p.id === pageId);
     if (page) {
       current.activePageId = pageId;
+      current.activeModalId = null;
       touch();
     }
+  }
+
+  function setActiveModal(modalId) {
+    if (!current) return;
+    current.activeModalId = modalId || null;
+    touch();
+  }
+
+  function getActiveModal() {
+    if (!current || !current.activeModalId) return null;
+    return findById(current.activeModalId);
+  }
+
+  function getModalsForPage(pageId) {
+    if (!current) return [];
+    const page = current.pages.find(p => p.id === pageId);
+    if (!page) return [];
+    return page.tree.filter(el => el.type === 'modal');
   }
 
   function removePage(pageId) {
@@ -369,6 +388,7 @@ const Project = (() => {
     moveElement, isAncestor,
     duplicateElement, pasteElement,
     addPage, setActivePage, removePage, renamePage, getPages, getActivePage,
+    setActiveModal, getActiveModal, getModalsForPage,
     undo, redo, canUndo, canRedo,
     serialize, deserialize,
     loadFromStorage, persistToStorage, clearStorage
