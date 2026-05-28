@@ -456,11 +456,32 @@
   function enterPreview() {
     if (!Project.get()) return;
     document.body.classList.add('preview-mode');
+    Canvas.setPreviewMode(true);
+    Canvas.select(null);
   }
 
   function exitPreview() {
     document.body.classList.remove('preview-mode');
+    Canvas.setPreviewMode(false);
   }
+
+  window.PullStackPreview = {
+    gotoPage(name) {
+      const p = Project.get();
+      if (!p) return;
+      const page = p.pages.find(pg => pg.name === name);
+      if (!page) {
+        toast(`Page "${name}" not found`, 'error');
+        return;
+      }
+      Project.setActivePage(page.id);
+      Canvas.render();
+      renderPages();
+    },
+    previewUrl(url) {
+      toast(`Would navigate to: ${url}`, 'success');
+    }
+  };
 
   let clipboard = null;
 

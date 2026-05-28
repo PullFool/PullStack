@@ -9,6 +9,12 @@ const Canvas = (() => {
   let onSelectCb = null;
   let cssDefs = {};
   let currentCdn = '';
+  let previewMode = false;
+
+  function setPreviewMode(on) {
+    previewMode = !!on;
+    render();
+  }
 
   function init(target, opts = {}) {
     canvasEl = typeof target === 'string' ? document.getElementById(target) : target;
@@ -228,6 +234,29 @@ const Canvas = (() => {
       .replace(/"/g, '&quot;');
   }
 
+  function previewOnClickAttr(p) {
+    if (!previewMode) return '';
+    const oc = p.onClick;
+    if (!oc || oc.action === 'none') return '';
+    const target = String(oc.target || '').replace(/'/g, "\\'");
+    switch (oc.action) {
+      case 'page':
+        return ` onclick="window.parent.PullStackPreview && window.parent.PullStackPreview.gotoPage('${target}')"`;
+      case 'open-modal':
+        return ` onclick="var m=document.getElementById('${target}');if(m){m.style.display='flex';}"`;
+      case 'close-modal':
+        return ` onclick="var m=document.getElementById('${target}');if(m){m.style.display='none';}"`;
+      case 'toggle':
+        return ` onclick="var el=document.getElementById('${target}');if(el){el.style.display=el.style.display==='none'?'':'none';}"`;
+      case 'scroll':
+        return ` onclick="var el=document.getElementById('${target}');if(el){el.scrollIntoView({behavior:'smooth'});}"`;
+      case 'url':
+        return ` onclick="window.parent.PullStackPreview && window.parent.PullStackPreview.previewUrl('${target}')"`;
+      default:
+        return '';
+    }
+  }
+
   function renderElementHtml(el) {
     const p = el.props || {};
     const cls = classFor(el);
@@ -241,9 +270,11 @@ const Canvas = (() => {
       case 'text':
         inner = `<p${clsPart}${stylePart}>${escape(p.text)}</p>`;
         break;
-      case 'button':
-        inner = `<button type="button"${clsPart}${stylePart}>${escape(p.text)}</button>`;
+      case 'button': {
+        const onClickPart = previewOnClickAttr(p);
+        inner = `<button type="button"${clsPart}${stylePart}${onClickPart}>${escape(p.text)}</button>`;
         break;
+      }
       case 'link':
         inner = `<a href="${escape(p.href)}"${clsPart}${stylePart}>${escape(p.text)}</a>`;
         break;
@@ -358,6 +389,8 @@ const Canvas = (() => {
     loadFrameworkAssets,
     defaultClassFor,
     presetsFor,
-    get selected() { return selectedId; }
+    setPreviewMode,
+    get selected() { return selectedId; },
+    get isPreview() { return previewMode; }
   };
 })();
