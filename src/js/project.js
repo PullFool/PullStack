@@ -41,24 +41,107 @@ const Project = (() => {
   }
 
   function create({ name, cssFramework, codeFramework }) {
+    const firstPage = { id: 'page_' + Math.random().toString(36).slice(2, 8), name: 'index', tree: [] };
     current = {
       name: name || 'untitled',
-      version: 1,
+      version: 2,
       cssFramework,
       codeFramework,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      tree: [],
+      pages: [firstPage],
+      activePageId: firstPage.id,
       meta: {}
     };
+    Object.defineProperty(current, 'tree', {
+      get() {
+        const p = current.pages.find(pg => pg.id === current.activePageId);
+        return p ? p.tree : [];
+      },
+      set(v) {
+        const p = current.pages.find(pg => pg.id === current.activePageId);
+        if (p) p.tree = v;
+      },
+      configurable: true
+    });
     resetHistory();
     return current;
+  }
+
+  function migrateLegacy(proj) {
+    if (proj.pages) return proj;
+    const page = { id: 'page_' + Math.random().toString(36).slice(2, 8), name: 'index', tree: proj.tree || [] };
+    proj.pages = [page];
+    proj.activePageId = page.id;
+    delete proj.tree;
+    Object.defineProperty(proj, 'tree', {
+      get() {
+        const p = proj.pages.find(pg => pg.id === proj.activePageId);
+        return p ? p.tree : [];
+      },
+      set(v) {
+        const p = proj.pages.find(pg => pg.id === proj.activePageId);
+        if (p) p.tree = v;
+      },
+      configurable: true
+    });
+    return proj;
+  }
+
+  function addPage(name) {
+    if (!current) return null;
+    const page = {
+      id: 'page_' + Math.random().toString(36).slice(2, 8),
+      name: (name || 'untitled').trim() || 'untitled',
+      tree: []
+    };
+    current.pages.push(page);
+    current.activePageId = page.id;
+    touch();
+    snapshot();
+    return page;
+  }
+
+  function setActivePage(pageId) {
+    if (!current) return;
+    const page = current.pages.find(p => p.id === pageId);
+    if (page) {
+      current.activePageId = pageId;
+      touch();
+    }
+  }
+
+  function removePage(pageId) {
+    if (!current || current.pages.length <= 1) return false;
+    current.pages = current.pages.filter(p => p.id !== pageId);
+    if (current.activePageId === pageId) current.activePageId = current.pages[0].id;
+    touch();
+    snapshot();
+    return true;
+  }
+
+  function renamePage(pageId, newName) {
+    if (!current) return;
+    const page = current.pages.find(p => p.id === pageId);
+    if (page) {
+      page.name = newName.trim() || page.name;
+      touch();
+    }
+  }
+
+  function getPages() {
+    return current ? current.pages : [];
+  }
+
+  function getActivePage() {
+    if (!current) return null;
+    return current.pages.find(p => p.id === current.activePageId);
   }
 
   function get() { return current; }
 
   function set(project) {
-    current = project;
+    current = migrateLegacy(project);
     resetHistory();
   }
 
@@ -95,8 +178,8 @@ const Project = (() => {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      if (parsed && parsed.tree) {
-        current = parsed;
+      if (parsed && (parsed.tree || parsed.pages)) {
+        current = migrateLegacy(parsed);
         resetHistory();
         return current;
       }
@@ -271,7 +354,9 @@ const Project = (() => {
 
   function deserialize(json) {
     try {
-      current = typeof json === 'string' ? JSON.parse(json) : json;
+      const parsed = typeof json === 'string' ? JSON.parse(json) : json;
+      current = migrateLegacy(parsed);
+      resetHistory();
       return current;
     } catch (e) {
       return null;
@@ -283,6 +368,7 @@ const Project = (() => {
     addElement, removeElement, findById, updateElement,
     moveElement, isAncestor,
     duplicateElement, pasteElement,
+    addPage, setActivePage, removePage, renamePage, getPages, getActivePage,
     undo, redo, canUndo, canRedo,
     serialize, deserialize,
     loadFromStorage, persistToStorage, clearStorage

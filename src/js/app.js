@@ -62,6 +62,75 @@
     updateCodeView();
   };
 
+  function renderPages() {
+    const list = $('pagesList');
+    const p = Project.get();
+    if (!p) {
+      list.innerHTML = '<div class="empty-state" style="padding:8px;font-size:11px;">No project</div>';
+      return;
+    }
+    list.innerHTML = '';
+    p.pages.forEach(page => {
+      const row = document.createElement('div');
+      const isActive = page.id === p.activePageId;
+      row.style.cssText = `
+        display:flex;align-items:center;gap:6px;padding:6px 10px;font-size:12px;
+        border-radius:6px;margin-bottom:3px;cursor:pointer;
+        ${isActive ? 'background:rgba(192,132,252,0.2);color:#fff;font-weight:600;' : 'color:rgba(255,255,255,0.7);'}
+      `;
+      row.innerHTML = `
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">📄 ${escape(page.name)}</span>
+        <button class="hbtn" data-rename-page="${page.id}" title="Rename" style="padding:2px 6px;font-size:10px;background:transparent;border:none;">✎</button>
+        ${p.pages.length > 1 ? `<button class="hbtn" data-remove-page="${page.id}" title="Delete" style="padding:2px 6px;font-size:10px;background:transparent;border:none;color:#fca5a5;">×</button>` : ''}
+      `;
+      row.addEventListener('click', (ev) => {
+        if (ev.target.closest('[data-rename-page]') || ev.target.closest('[data-remove-page]')) return;
+        if (isActive) return;
+        Project.setActivePage(page.id);
+        Canvas.select(null);
+        Canvas.render();
+        Properties.show(null);
+        renderPages();
+      });
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll('[data-rename-page]').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const id = btn.dataset.renamePage;
+        const page = p.pages.find(pg => pg.id === id);
+        const newName = prompt('Rename page:', page.name);
+        if (newName) {
+          Project.renamePage(id, newName);
+          renderPages();
+        }
+      });
+    });
+    list.querySelectorAll('[data-remove-page]').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const id = btn.dataset.removePage;
+        if (!confirm('Delete this page?')) return;
+        Project.removePage(id);
+        Canvas.select(null);
+        Canvas.render();
+        Properties.show(null);
+        renderPages();
+      });
+    });
+  }
+
+  $('addPageBtn')?.addEventListener('click', () => {
+    const name = prompt('Page name:', 'untitled');
+    if (!name) return;
+    Project.addPage(name);
+    Canvas.select(null);
+    Canvas.render();
+    Properties.show(null);
+    renderPages();
+  });
+
   $('layersToggleBtn')?.addEventListener('click', () => {
     const body = $('layersBody');
     const btn = $('layersToggleBtn');
@@ -235,9 +304,11 @@
   function enableActions() {
     $('saveProjectBtn').disabled = false;
     $('exportBtn').disabled = false;
+    $('addPageBtn').disabled = false;
     document.querySelectorAll('.menu-item[data-needs-project]').forEach(el => {
       el.classList.remove('disabled');
     });
+    renderPages();
   }
 
   function setupMenuBar() {
@@ -363,7 +434,9 @@
     });
     $('saveProjectBtn').disabled = true;
     $('exportBtn').disabled = true;
+    $('addPageBtn').disabled = true;
     $('projectMeta').innerHTML = '<span class="meta-label">No project</span>';
+    renderPages();
     toast('Project closed', 'success');
   }
 
