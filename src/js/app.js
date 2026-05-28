@@ -64,7 +64,7 @@
     $('newProjectModal').classList.remove('active');
   }
 
-  function createProject() {
+  async function createProject() {
     const name = ($('projectNameInput').value || 'untitled').trim();
     const cssFramework = $('cssFrameworkSelect').value;
     const codeFramework = $('codeFrameworkSelect').value;
@@ -73,6 +73,7 @@
     Sidebar.render('elementPalette');
     enableActions();
     updateProjectMeta();
+    await Canvas.loadFrameworkAssets(cssFramework);
     Canvas.render();
     toast(`Project "${name}" created`, 'success');
   }
@@ -101,6 +102,7 @@
       Sidebar.render('elementPalette');
       enableActions();
       updateProjectMeta();
+      await Canvas.loadFrameworkAssets(parsed.cssFramework);
       Canvas.render();
       toast(`Opened "${parsed.name}"`, 'success');
     });

@@ -19,7 +19,7 @@
   },
   "chromium-args": "--enable-features=OverlayScrollbar --disable-features=AutofillEnableAccountWalletStorage",
   "scripts": {
-    "start": "nw .",
+    "start": "node_modules\\nw\\nwjs\\nw.exe .",
     "build": "echo Build step not yet configured"
   },
   "devDependencies": {

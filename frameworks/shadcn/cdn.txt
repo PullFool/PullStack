@@ -1,2 +1,9 @@
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- shadcn/ui is copy-paste components; install via `npx shadcn-ui@latest add ...` in your React project -->
+<script>
+  if (window.tailwind) {
+    window.tailwind.config = {
+      corePlugins: { preflight: false }
+    };
+  }
+</script>
+<!-- shadcn/ui components are copy-paste; install via `npx shadcn-ui@latest add ...` in your React project after export -->
