@@ -193,6 +193,57 @@ const Project = (() => {
     return walk(node.children);
   }
 
+  function reassignIds(node) {
+    node.id = 'el_' + Math.random().toString(36).slice(2, 10);
+    if (node.children) node.children.forEach(reassignIds);
+    if (node.type === 'modal' && node.props) {
+      node.props.modalId = 'modal_' + Math.random().toString(36).slice(2, 8);
+    }
+  }
+
+  function duplicateElement(id) {
+    if (!current) return null;
+    const original = findById(id);
+    if (!original) return null;
+    const clone = JSON.parse(JSON.stringify(original));
+    reassignIds(clone);
+
+    function appendNextTo(arr, targetId, item) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].id === targetId) {
+          arr.splice(i + 1, 0, item);
+          return true;
+        }
+        if (arr[i].children && appendNextTo(arr[i].children, targetId, item)) return true;
+      }
+      return false;
+    }
+    appendNextTo(current.tree, id, clone);
+    touch();
+    snapshot();
+    return clone;
+  }
+
+  function pasteElement(node, parentId) {
+    if (!current) return null;
+    const clone = JSON.parse(JSON.stringify(node));
+    reassignIds(clone);
+    if (!parentId) {
+      current.tree.push(clone);
+    } else {
+      const parent = findById(parentId);
+      if (parent) {
+        parent.children = parent.children || [];
+        parent.children.push(clone);
+      } else {
+        current.tree.push(clone);
+      }
+    }
+    touch();
+    snapshot();
+    return clone;
+  }
+
   function moveElement(id, newParentId) {
     if (!current || id === newParentId) return null;
     if (newParentId && isAncestor(id, newParentId)) return null;
@@ -231,6 +282,7 @@ const Project = (() => {
     create, get, set, clear, touch,
     addElement, removeElement, findById, updateElement,
     moveElement, isAncestor,
+    duplicateElement, pasteElement,
     undo, redo, canUndo, canRedo,
     serialize, deserialize,
     loadFromStorage, persistToStorage, clearStorage

@@ -61,6 +61,21 @@
       if (Project.redo()) { Canvas.render(); Properties.show(Canvas.selected); }
       return;
     }
+    if (ctrl && ev.key.toLowerCase() === 'c' && Canvas.selected && !isEditingText()) {
+      ev.preventDefault();
+      copySelected();
+      return;
+    }
+    if (ctrl && ev.key.toLowerCase() === 'v' && Project.get() && !isEditingText()) {
+      ev.preventDefault();
+      pasteFromClipboard();
+      return;
+    }
+    if (ctrl && ev.key.toLowerCase() === 'd' && Canvas.selected) {
+      ev.preventDefault();
+      duplicateSelected();
+      return;
+    }
     if (ev.key === 'F12') {
       ev.preventDefault();
       if (typeof nw !== 'undefined' && nw.Window && nw.Window.get) {
@@ -223,6 +238,9 @@
           toast('Redo', 'success');
         }
         break;
+      case 'copy': copySelected(); break;
+      case 'paste': pasteFromClipboard(); break;
+      case 'duplicate': duplicateSelected(); break;
       case 'delete-selected':
         if (Canvas.selected) {
           Project.removeElement(Canvas.selected);
@@ -296,6 +314,52 @@
 
   function exitPreview() {
     document.body.classList.remove('preview-mode');
+  }
+
+  let clipboard = null;
+
+  function copySelected() {
+    if (!Canvas.selected) return;
+    const el = Project.findById(Canvas.selected);
+    if (el) {
+      clipboard = JSON.parse(JSON.stringify(el));
+      toast('Copied to clipboard', 'success');
+    }
+  }
+
+  function pasteFromClipboard() {
+    if (!clipboard) {
+      toast('Nothing to paste', 'error');
+      return;
+    }
+    let parentId = null;
+    if (Canvas.selected) {
+      const el = Project.findById(Canvas.selected);
+      if (el && (el.type === 'container' || el.type === 'modal' || el.type === 'form')) {
+        parentId = el.id;
+      }
+    }
+    const pasted = Project.pasteElement(clipboard, parentId);
+    if (pasted) {
+      Canvas.render();
+      Canvas.select(pasted.id);
+      Properties.show(pasted.id);
+      toast('Pasted', 'success');
+    }
+  }
+
+  function duplicateSelected() {
+    if (!Canvas.selected) {
+      toast('Nothing selected', 'error');
+      return;
+    }
+    const dup = Project.duplicateElement(Canvas.selected);
+    if (dup) {
+      Canvas.render();
+      Canvas.select(dup.id);
+      Properties.show(dup.id);
+      toast('Duplicated', 'success');
+    }
   }
 
   $('previewExitBtn')?.addEventListener('click', exitPreview);
@@ -451,5 +515,12 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
+  }
+
+  function isEditingText() {
+    const a = document.activeElement;
+    if (!a) return false;
+    const tag = a.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || a.isContentEditable;
   }
 })();
