@@ -380,20 +380,6 @@ input, select, textarea {
   to { transform: translate(-50%, 0); opacity: 1; }
 }
 
-.ps-el {
-  position: relative;
-  outline: 1px dashed transparent;
-  outline-offset: 2px;
-  cursor: pointer;
-  transition: outline-color 0.1s;
-}
-.ps-el:hover {
-  outline-color: rgba(192, 132, 252, 0.5);
-}
-.ps-el.is-selected {
-  outline: 2px solid var(--accent);
-}
-
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
