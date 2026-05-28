@@ -70,28 +70,32 @@ const Exporter = (() => {
     const baseForLevel = el.type === 'heading' ? (cssDefs[`heading.${p.level || 1}`] || baseCls) : baseCls;
     const effectiveCls = p.customClass != null ? p.customClass : baseForLevel;
     const classAttr = effectiveCls ? ` class="${effectiveCls}"` : '';
+    const colorTarget = ['heading', 'text', 'link'].includes(el.type) ? 'color' : 'background-color';
+    const styleAttr = (p.color && el.type !== 'image' && el.type !== 'input')
+      ? ` style="${colorTarget}: ${p.color}"`
+      : '';
 
     switch (el.type) {
       case 'heading':
-        return `<h${p.level || 1}${classAttr}>${esc(p.text)}</h${p.level || 1}>`;
+        return `<h${p.level || 1}${classAttr}${styleAttr}>${esc(p.text)}</h${p.level || 1}>`;
       case 'text':
-        return `<p${classAttr}>${esc(p.text)}</p>`;
+        return `<p${classAttr}${styleAttr}>${esc(p.text)}</p>`;
       case 'button':
-        return `<button type="button"${classAttr}>${esc(p.text)}</button>`;
+        return `<button type="button"${classAttr}${styleAttr}>${esc(p.text)}</button>`;
       case 'link':
-        return `<a href="${esc(p.href)}"${classAttr}>${esc(p.text)}</a>`;
+        return `<a href="${esc(p.href)}"${classAttr}${styleAttr}>${esc(p.text)}</a>`;
       case 'image':
         return `<img src="${esc(p.src)}" alt="${esc(p.alt)}"${classAttr} />`;
       case 'container': {
         const inner = (el.children || []).map(c => renderElement(c, cssDefs)).join('\n');
-        return `<div${classAttr}>\n${inner}\n</div>`;
+        return `<div${classAttr}${styleAttr}>\n${inner}\n</div>`;
       }
       case 'divider':
-        return `<hr${classAttr} />`;
+        return `<hr${classAttr}${styleAttr} />`;
       case 'input':
         return `<input type="${esc(p.type || 'text')}" placeholder="${esc(p.placeholder)}"${classAttr} />`;
       default:
-        return `<div${classAttr}>${esc(el.type)}</div>`;
+        return `<div${classAttr}${styleAttr}>${esc(el.type)}</div>`;
     }
   }
 

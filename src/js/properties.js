@@ -67,37 +67,70 @@ const Properties = (() => {
     return fields;
   }
 
+  function colorTargetFor(type) {
+    switch (type) {
+      case 'button':
+      case 'container':
+      case 'divider':
+        return 'background';
+      case 'heading':
+      case 'text':
+      case 'link':
+        return 'foreground';
+      default:
+        return null;
+    }
+  }
+
   function classField(el) {
+    const target = colorTargetFor(el.type);
+    if (!target) return document.createComment('no color picker for this type');
+
     const wrap = document.createElement('div');
     wrap.className = 'field';
-    const defaultClass = (window.Canvas && Canvas.defaultClassFor)
-      ? Canvas.defaultClassFor(el)
-      : '';
-    const current = (el.props && el.props.customClass != null)
-      ? el.props.customClass
-      : defaultClass;
+    const label = target === 'background' ? 'Background color' : 'Text color';
+    const current = (el.props && el.props.color) ? el.props.color : '';
 
     wrap.innerHTML = `
-      <span class="field-label">CSS classes</span>
-      <textarea class="ps-class-input"
-        style="width:100%;min-height:64px;background:var(--bg-1);border:1px solid var(--border-strong);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:ui-monospace,Menlo,monospace;resize:vertical;"
-        spellcheck="false"></textarea>
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <button type="button" class="hbtn ps-class-reset" style="flex:1;font-size:11px;padding:4px 8px;">Reset to default</button>
+      <span class="field-label">${label}</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="color" class="ps-color-input"
+          style="width:48px;height:36px;padding:0;border:1px solid var(--border-strong);border-radius:8px;background:transparent;cursor:pointer;" />
+        <input type="text" class="ps-color-hex" maxlength="7" placeholder="#000000"
+          style="flex:1;background:var(--bg-1);border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;font-family:ui-monospace,Menlo,monospace;" />
+        <button type="button" class="hbtn ps-color-clear" style="font-size:11px;padding:6px 10px;">Clear</button>
       </div>
-      <div style="font-size:11px;opacity:0.55;margin-top:6px;line-height:1.5;">
-        Edit to restyle. Type any framework utility / component class. Empty = no class.
+      <div style="font-size:11px;opacity:0.55;margin-top:6px;line-height:1.4;">
+        Sets an inline ${target === 'background' ? 'background-color' : 'color'} that overrides the framework default.
       </div>
     `;
-    const ta = wrap.querySelector('.ps-class-input');
-    ta.value = current || '';
-    ta.addEventListener('input', () => {
-      update(el.id, 'customClass', ta.value);
+
+    const picker = wrap.querySelector('.ps-color-input');
+    const hex = wrap.querySelector('.ps-color-hex');
+    const clearBtn = wrap.querySelector('.ps-color-clear');
+
+    const initial = current || (target === 'background' ? '#3b82f6' : '#111827');
+    picker.value = initial;
+    hex.value = current || '';
+
+    picker.addEventListener('input', () => {
+      hex.value = picker.value;
+      update(el.id, 'color', picker.value);
     });
-    wrap.querySelector('.ps-class-reset').addEventListener('click', () => {
-      update(el.id, 'customClass', null);
-      ta.value = defaultClass || '';
+    hex.addEventListener('input', () => {
+      const v = hex.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+        picker.value = v;
+        update(el.id, 'color', v);
+      } else if (v === '') {
+        update(el.id, 'color', null);
+      }
     });
+    clearBtn.addEventListener('click', () => {
+      hex.value = '';
+      update(el.id, 'color', null);
+    });
+
     return wrap;
   }
 

@@ -122,6 +122,13 @@ const Canvas = (() => {
     return defaultClassFor(el);
   }
 
+  function inlineStyleFor(el) {
+    const p = el.props || {};
+    if (!p.color) return '';
+    const target = ['heading', 'text', 'link'].includes(el.type) ? 'color' : 'background-color';
+    return ` style="${target}: ${p.color}"`;
+  }
+
   function classAttr(el) {
     const c = classFor(el);
     return c ? ` class="${c}"` : '';
@@ -140,36 +147,37 @@ const Canvas = (() => {
     const p = el.props || {};
     const cls = classFor(el);
     const clsPart = cls ? ` class="${cls}"` : '';
+    const stylePart = inlineStyleFor(el);
     let inner;
     switch (el.type) {
       case 'heading':
-        inner = `<h${p.level || 1}${clsPart}>${escape(p.text)}</h${p.level || 1}>`;
+        inner = `<h${p.level || 1}${clsPart}${stylePart}>${escape(p.text)}</h${p.level || 1}>`;
         break;
       case 'text':
-        inner = `<p${clsPart}>${escape(p.text)}</p>`;
+        inner = `<p${clsPart}${stylePart}>${escape(p.text)}</p>`;
         break;
       case 'button':
-        inner = `<button type="button"${clsPart}>${escape(p.text)}</button>`;
+        inner = `<button type="button"${clsPart}${stylePart}>${escape(p.text)}</button>`;
         break;
       case 'link':
-        inner = `<a href="${escape(p.href)}"${clsPart}>${escape(p.text)}</a>`;
+        inner = `<a href="${escape(p.href)}"${clsPart}${stylePart}>${escape(p.text)}</a>`;
         break;
       case 'image':
         inner = `<img src="${escape(p.src)}" alt="${escape(p.alt)}"${clsPart} />`;
         break;
       case 'container': {
         const children = (el.children || []).map(c => renderElementHtml(c)).join('');
-        inner = `<div${clsPart}>${children}</div>`;
+        inner = `<div${clsPart}${stylePart}>${children}</div>`;
         break;
       }
       case 'divider':
-        inner = `<hr${clsPart} />`;
+        inner = `<hr${clsPart}${stylePart} />`;
         break;
       case 'input':
         inner = `<input type="${escape(p.type || 'text')}" placeholder="${escape(p.placeholder)}"${clsPart} />`;
         break;
       default:
-        inner = `<div${clsPart}>${escape(el.type)}</div>`;
+        inner = `<div${clsPart}${stylePart}>${escape(el.type)}</div>`;
     }
     const selectedAttr = el.id === selectedId ? ' class="is-selected"' : '';
     return `<div data-ps-el="${el.id}"${selectedAttr}>${inner}</div>`;
