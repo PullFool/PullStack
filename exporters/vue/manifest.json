@@ -1,6 +1,6 @@
 {
   "name": "Vue 3 SFC",
-  "version": "3.x",
+  "version": "3.4.0",
   "description": "Vue 3 single-file component",
   "icon": "💚",
   "extension": ".vue",

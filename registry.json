@@ -1,0 +1,64 @@
+{
+  "registryVersion": 1,
+  "updatedAt": "2026-05-28",
+  "frameworks": {
+    "tailwind": {
+      "version": "3.4.0",
+      "files": ["manifest.json", "elements.json", "cdn.txt"]
+    },
+    "bootstrap": {
+      "version": "5.3.3",
+      "files": ["manifest.json", "elements.json", "cdn.txt"]
+    },
+    "bulma": {
+      "version": "1.0.2",
+      "files": ["manifest.json", "elements.json", "cdn.txt"]
+    },
+    "daisyui": {
+      "version": "4.12.10",
+      "files": ["manifest.json", "elements.json", "cdn.txt"]
+    },
+    "shadcn": {
+      "version": "0.8.0",
+      "files": ["manifest.json", "elements.json", "cdn.txt"]
+    },
+    "pico": {
+      "version": "2.0.6",
+      "files": ["manifest.json", "elements.json", "cdn.txt"]
+    },
+    "vanilla": {
+      "version": "1.0.0",
+      "files": ["manifest.json", "elements.json", "cdn.txt"]
+    }
+  },
+  "exporters": {
+    "html": {
+      "version": "5.0.0",
+      "files": ["manifest.json", "template.html"]
+    },
+    "laravel-blade": {
+      "version": "11.0.0",
+      "files": ["manifest.json", "template.blade.php"]
+    },
+    "inertia-vue": {
+      "version": "1.0.0",
+      "files": ["manifest.json", "template.vue"]
+    },
+    "codeigniter": {
+      "version": "4.5.0",
+      "files": ["manifest.json", "template.php"]
+    },
+    "wordpress": {
+      "version": "6.5.0",
+      "files": ["manifest.json", "template.php"]
+    },
+    "vue": {
+      "version": "3.4.0",
+      "files": ["manifest.json", "template.vue"]
+    },
+    "react": {
+      "version": "18.3.0",
+      "files": ["manifest.json", "template.jsx"]
+    }
+  }
+}

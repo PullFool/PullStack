@@ -1,6 +1,6 @@
 {
   "name": "React JSX",
-  "version": "18.x / 19.x",
+  "version": "18.3.0",
   "description": "React functional component (JSX)",
   "icon": "⚛",
   "extension": ".jsx",

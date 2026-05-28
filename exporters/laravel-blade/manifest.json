@@ -1,6 +1,6 @@
 {
   "name": "Laravel Blade",
-  "version": "10.x / 11.x",
+  "version": "11.0.0",
   "description": "Blade view template for Laravel",
   "icon": "🐘",
   "extension": ".blade.php",

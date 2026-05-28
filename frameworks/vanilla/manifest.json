@@ -1,6 +1,6 @@
 {
   "name": "Vanilla CSS",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "No framework, plain HTML with minimal styles",
   "icon": "🍦",
   "type": "css-framework"

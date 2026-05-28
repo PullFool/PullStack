@@ -243,6 +243,8 @@
         }
         break;
       case 'update-frameworks':
+        checkCloudUpdates();
+        break;
       case 'reload-frameworks':
         refreshFrameworks();
         break;
@@ -299,6 +301,76 @@
   $('previewExitBtn')?.addEventListener('click', exitPreview);
   $('aboutCloseBtn')?.addEventListener('click', () => $('aboutModal').classList.remove('active'));
   $('shortcutsCloseBtn')?.addEventListener('click', () => $('shortcutsModal').classList.remove('active'));
+  $('updatesCloseBtn')?.addEventListener('click', () => $('updatesModal').classList.remove('active'));
+
+  async function checkCloudUpdates() {
+    const modal = $('updatesModal');
+    const body = $('updatesBody');
+    const installBtn = $('updatesInstallAllBtn');
+    modal.classList.add('active');
+    body.innerHTML = '<div class="empty-state">Checking registry on GitHub...</div>';
+    installBtn.disabled = true;
+    installBtn.textContent = 'Install all updates';
+
+    let result;
+    try {
+      result = await Updater.checkUpdates();
+    } catch (e) {
+      body.innerHTML = `<div class="empty-state" style="color:#fca5a5;">Could not reach registry.<br><span style="font-size:11px;opacity:0.6;">${e.message}</span></div>`;
+      return;
+    }
+
+    if (!result.updates.length) {
+      body.innerHTML = `<div class="empty-state" style="color:#86efac;">Everything is up to date!<br><span style="font-size:11px;opacity:0.6;">Registry version ${result.registry.registryVersion} (${result.registry.updatedAt})</span></div>`;
+      return;
+    }
+
+    body.innerHTML = '';
+    result.updates.forEach((u, i) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;';
+      row.innerHTML = `
+        <div>
+          <div style="font-weight:600;">${u.name}<span style="opacity:0.5;font-size:11px;margin-left:8px;">${u.kind}</span></div>
+          <div style="font-size:11px;opacity:0.6;margin-top:2px;">${u.localVer} → <span style="color:#86efac;">${u.remoteVer}</span></div>
+        </div>
+        <button class="hbtn" data-update-idx="${i}" style="font-size:11px;padding:6px 12px;">${u.action === 'install' ? 'Install' : 'Update'}</button>
+      `;
+      body.appendChild(row);
+    });
+
+    body.querySelectorAll('[data-update-idx]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const idx = parseInt(btn.dataset.updateIdx, 10);
+        const u = result.updates[idx];
+        btn.disabled = true;
+        btn.textContent = 'Installing...';
+        try {
+          await Updater.applyUpdate(u);
+          btn.textContent = '✓ Done';
+          btn.style.background = 'rgba(16,185,129,0.2)';
+          btn.style.borderColor = 'rgba(16,185,129,0.5)';
+          if (Project.get() && (u.name === Project.get().cssFramework || u.name === Project.get().codeFramework)) {
+            await Canvas.loadFrameworkAssets(Project.get().cssFramework);
+            Canvas.render();
+          }
+        } catch (e) {
+          btn.textContent = 'Failed';
+          btn.style.borderColor = 'rgba(239,68,68,0.5)';
+          toast('Update failed: ' + e.message, 'error');
+        }
+      });
+    });
+
+    installBtn.disabled = false;
+    installBtn.onclick = async () => {
+      installBtn.disabled = true;
+      installBtn.textContent = 'Installing all...';
+      const buttons = body.querySelectorAll('[data-update-idx]:not(:disabled)');
+      for (const b of buttons) b.click();
+      installBtn.textContent = 'All triggered — see rows above';
+    };
+  }
 
   async function refreshFrameworks() {
     const p = Project.get();
