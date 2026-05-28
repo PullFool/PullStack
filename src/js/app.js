@@ -32,6 +32,36 @@
     Layers.render(Canvas.selected);
   };
 
+  let codeViewOn = false;
+  $('codeViewToggle')?.addEventListener('click', () => {
+    codeViewOn = !codeViewOn;
+    $('codeView').style.display = codeViewOn ? 'block' : 'none';
+    $('codeViewToggle').classList.toggle('active', codeViewOn);
+    if (codeViewOn) updateCodeView();
+  });
+
+  async function updateCodeView() {
+    if (!codeViewOn) return;
+    const p = Project.get();
+    const codeEl = $('codeView');
+    if (!p) {
+      codeEl.textContent = '// Create or open a project first';
+      return;
+    }
+    try {
+      const result = await Exporter.exportProject(p);
+      codeEl.textContent = result.content;
+    } catch (e) {
+      codeEl.textContent = '// Error generating code: ' + e.message;
+    }
+  }
+
+  const _origCanvasRender2 = Canvas.render.bind(Canvas);
+  Canvas.render = function () {
+    _origCanvasRender2();
+    updateCodeView();
+  };
+
   $('layersToggleBtn')?.addEventListener('click', () => {
     const body = $('layersBody');
     const btn = $('layersToggleBtn');

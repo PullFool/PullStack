@@ -106,8 +106,12 @@
         <button class="vbtn" data-viewport="mobile" title="Mobile">📱</button>
       </div>
       <div class="canvas-info" id="canvasInfo"></div>
+      <div>
+        <button class="vbtn" id="codeViewToggle" title="Toggle code view">{ } Code</button>
+      </div>
     </div>
-    <div class="canvas-scroller">
+    <div class="code-view" id="codeView" style="display:none;flex:1;overflow:auto;background:#0d1117;color:#c9d1d9;font-family:ui-monospace,Menlo,monospace;font-size:12px;padding:16px;white-space:pre;border-top:1px solid var(--border);"></div>
+    <div class="canvas-scroller" id="canvasScroller">
       <div class="canvas" id="canvas">
         <div class="canvas-empty">
           <div class="canvas-empty-title">Welcome to PullStack</div>
