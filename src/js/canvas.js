@@ -388,16 +388,8 @@ const Canvas = (() => {
     const activeModal = Project.getActiveModal && Project.getActiveModal();
     if (activeModal) {
       const children = (activeModal.children || []).map(c => renderElementHtml(c)).join('');
-      const title = escape(activeModal.props.title || activeModal.props.modalId || 'modal');
-      const activePage = Project.getActivePage && Project.getActivePage();
-      const pageName = activePage ? escape(activePage.name) : 'page';
       frameRoot.className = '';
       frameRoot.innerHTML = `
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(192,132,252,0.1);border:1px solid rgba(192,132,252,0.3);border-radius:8px;margin-bottom:16px;font-size:12px;">
-          <button data-ps-back-to-page style="background:#c084fc;border:none;color:#fff;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">← Back to ${pageName}</button>
-          <span style="color:#c084fc;font-weight:700;">🪟 Editing modal: ${title}</span>
-          <span style="opacity:0.5;flex:1;text-align:right;">id="${escape(activeModal.props.modalId || '')}"</span>
-        </div>
         <div data-ps-container="${activeModal.id}" style="min-height:400px;padding:16px;border:2px dashed rgba(192,132,252,0.35);border-radius:10px;background:#fafafa;">${children}</div>
       `;
       return;
