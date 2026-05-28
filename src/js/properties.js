@@ -60,10 +60,45 @@ const Properties = (() => {
         break;
       case 'container':
       case 'divider':
-        fields.push(noteField(`No editable properties for ${el.type} yet.`));
         break;
     }
+
+    fields.push(classField(el));
     return fields;
+  }
+
+  function classField(el) {
+    const wrap = document.createElement('div');
+    wrap.className = 'field';
+    const defaultClass = (window.Canvas && Canvas.defaultClassFor)
+      ? Canvas.defaultClassFor(el)
+      : '';
+    const current = (el.props && el.props.customClass != null)
+      ? el.props.customClass
+      : defaultClass;
+
+    wrap.innerHTML = `
+      <span class="field-label">CSS classes</span>
+      <textarea class="ps-class-input"
+        style="width:100%;min-height:64px;background:var(--bg-1);border:1px solid var(--border-strong);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:ui-monospace,Menlo,monospace;resize:vertical;"
+        spellcheck="false"></textarea>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <button type="button" class="hbtn ps-class-reset" style="flex:1;font-size:11px;padding:4px 8px;">Reset to default</button>
+      </div>
+      <div style="font-size:11px;opacity:0.55;margin-top:6px;line-height:1.5;">
+        Edit to restyle. Type any framework utility / component class. Empty = no class.
+      </div>
+    `;
+    const ta = wrap.querySelector('.ps-class-input');
+    ta.value = current || '';
+    ta.addEventListener('input', () => {
+      update(el.id, 'customClass', ta.value);
+    });
+    wrap.querySelector('.ps-class-reset').addEventListener('click', () => {
+      update(el.id, 'customClass', null);
+      ta.value = defaultClass || '';
+    });
+    return wrap;
   }
 
   function update(elId, key, value) {

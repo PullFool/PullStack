@@ -66,9 +66,10 @@ const Exporter = (() => {
 
   function renderElement(el, cssDefs) {
     const p = el.props || {};
-    const cls = cssDefs[el.type] || '';
-    const clsForLevel = el.type === 'heading' ? (cssDefs[`heading.${p.level || 1}`] || cls) : cls;
-    const classAttr = clsForLevel ? ` class="${clsForLevel}"` : '';
+    const baseCls = cssDefs[el.type] || '';
+    const baseForLevel = el.type === 'heading' ? (cssDefs[`heading.${p.level || 1}`] || baseCls) : baseCls;
+    const effectiveCls = p.customClass != null ? p.customClass : baseForLevel;
+    const classAttr = effectiveCls ? ` class="${effectiveCls}"` : '';
 
     switch (el.type) {
       case 'heading':
@@ -93,6 +94,7 @@ const Exporter = (() => {
         return `<div${classAttr}>${esc(el.type)}</div>`;
     }
   }
+
 
   function esc(s) {
     if (s == null) return '';

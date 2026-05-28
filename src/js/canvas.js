@@ -110,10 +110,16 @@ const Canvas = (() => {
     }
   }
 
-  function classFor(el) {
+  function defaultClassFor(el) {
     const p = el.props || {};
     if (el.type === 'heading') return cssDefs[`heading.${p.level || 1}`] || cssDefs.heading || '';
     return cssDefs[el.type] || '';
+  }
+
+  function classFor(el) {
+    const p = el.props || {};
+    if (p.customClass != null) return p.customClass;
+    return defaultClassFor(el);
   }
 
   function classAttr(el) {
@@ -224,6 +230,7 @@ const Canvas = (() => {
     render,
     select,
     loadFrameworkAssets,
+    defaultClassFor,
     get selected() { return selectedId; }
   };
 })();
