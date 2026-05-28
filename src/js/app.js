@@ -197,6 +197,10 @@
   $('exportBtn').addEventListener('click', exportProject);
   setupMenuBar();
 
+  window.addEventListener('beforeunload', () => {
+    if (Project.get() && Project.persistToStorage) Project.persistToStorage();
+  });
+
   document.addEventListener('keydown', (ev) => {
     const ctrl = ev.ctrlKey || ev.metaKey;
 
@@ -428,6 +432,7 @@
       case 'toggle-sidebar': document.querySelector('.sidebar').classList.toggle('hidden'); break;
       case 'toggle-properties': document.querySelector('.properties').classList.toggle('hidden'); break;
       case 'reload-window':
+        if (Project.get() && Project.persistToStorage) Project.persistToStorage();
         location.reload();
         break;
       case 'devtools':
