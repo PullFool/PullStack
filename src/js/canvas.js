@@ -24,14 +24,15 @@ const Canvas = (() => {
       showEmptyState(!!Project.get());
       return;
     }
+    const bust = `?_t=${Date.now()}`;
     try {
-      const defsRes = await fetch(`frameworks/${cssFramework}/elements.json`);
+      const defsRes = await fetch(`frameworks/${cssFramework}/elements.json${bust}`, { cache: 'no-store' });
       cssDefs = defsRes.ok ? await defsRes.json() : {};
     } catch (e) {
       cssDefs = {};
     }
     try {
-      const cdnRes = await fetch(`frameworks/${cssFramework}/cdn.txt`);
+      const cdnRes = await fetch(`frameworks/${cssFramework}/cdn.txt${bust}`, { cache: 'no-store' });
       currentCdn = cdnRes.ok ? await cdnRes.text() : '';
     } catch (e) {
       currentCdn = '';

@@ -28,6 +28,7 @@
   $('saveProjectBtn').addEventListener('click', saveProject);
   $('openProjectBtn').addEventListener('click', openProject);
   $('exportBtn').addEventListener('click', exportProject);
+  $('refreshBtn').addEventListener('click', refreshFrameworks);
 
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Delete' && Canvas.selected) {
@@ -121,6 +122,26 @@
     $('saveProjectBtn').disabled = false;
     $('previewBtn').disabled = false;
     $('exportBtn').disabled = false;
+    $('refreshBtn').disabled = false;
+  }
+
+  async function refreshFrameworks() {
+    const p = Project.get();
+    if (!p) return;
+    const btn = $('refreshBtn');
+    btn.disabled = true;
+    btn.textContent = '↻ Refreshing...';
+    try {
+      await Canvas.loadFrameworkAssets(p.cssFramework);
+      Canvas.render();
+      if (Canvas.selected) Properties.show(Canvas.selected);
+      toast('Framework styles reloaded', 'success');
+    } catch (e) {
+      toast('Refresh failed: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '↻ Refresh';
+    }
   }
 
   function updateProjectMeta() {

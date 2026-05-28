@@ -42,10 +42,11 @@ const Exporter = (() => {
   }
 
   async function exportProject(project) {
-    const cssDefs = await loadJson(`frameworks/${project.cssFramework}/elements.json`) || {};
-    const cssCdn = await loadText(`frameworks/${project.cssFramework}/cdn.txt`) || '';
-    const codeManifest = await loadJson(`exporters/${project.codeFramework}/manifest.json`) || {};
-    const codeTemplate = await loadText(`exporters/${project.codeFramework}/template${codeManifest.extension || '.html'}`) || '{{CONTENT}}';
+    const bust = `?_t=${Date.now()}`;
+    const cssDefs = await loadJson(`frameworks/${project.cssFramework}/elements.json${bust}`) || {};
+    const cssCdn = await loadText(`frameworks/${project.cssFramework}/cdn.txt${bust}`) || '';
+    const codeManifest = await loadJson(`exporters/${project.codeFramework}/manifest.json${bust}`) || {};
+    const codeTemplate = await loadText(`exporters/${project.codeFramework}/template${codeManifest.extension || '.html'}${bust}`) || '{{CONTENT}}';
 
     const html = renderTree(project.tree, cssDefs);
     const headInjection = cssCdn.trim();

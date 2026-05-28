@@ -20,6 +20,26 @@
     { "label": "Purple", "color": "#9333ea", "class": "inline-flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
     { "label": "Pink", "color": "#db2777", "class": "inline-flex items-center justify-center bg-pink-600 hover:bg-pink-700 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
     { "label": "Gray", "color": "#4b5563", "class": "inline-flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
-    { "label": "Outline", "color": "#ffffff", "class": "inline-flex items-center justify-center bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-5 py-2 rounded-lg font-semibold transition" }
+    { "label": "Outline", "color": "#ffffff", "class": "inline-flex items-center justify-center bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-5 py-2 rounded-lg font-semibold transition" },
+    { "label": "Sunset", "color": "linear-gradient(90deg,#f97316,#ec4899)", "class": "inline-flex items-center justify-center bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-lg font-semibold transition shadow-lg" },
+    { "label": "Ocean", "color": "linear-gradient(90deg,#06b6d4,#3b82f6)", "class": "inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold transition shadow-lg" },
+    { "label": "Aurora", "color": "linear-gradient(90deg,#8b5cf6,#ec4899)", "class": "inline-flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-lg font-semibold transition shadow-lg" },
+    { "label": "Forest", "color": "linear-gradient(90deg,#10b981,#14b8a6)", "class": "inline-flex items-center justify-center bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-5 py-2.5 rounded-lg font-semibold transition shadow-lg" },
+    { "label": "Fire", "color": "linear-gradient(90deg,#facc15,#ef4444)", "class": "inline-flex items-center justify-center bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 hover:brightness-110 text-white px-5 py-2.5 rounded-lg font-semibold transition shadow-lg" },
+    { "label": "Twilight", "color": "linear-gradient(90deg,#1e3a8a,#7c3aed)", "class": "inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-purple-600 hover:from-blue-800 hover:to-purple-500 text-white px-5 py-2.5 rounded-lg font-semibold transition shadow-lg" }
+  ],
+  "heading.variants": [
+    { "label": "Sunset gradient", "color": "linear-gradient(90deg,#f97316,#ec4899)", "class": "text-4xl font-extrabold mb-4 bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent" },
+    { "label": "Ocean gradient", "color": "linear-gradient(90deg,#06b6d4,#3b82f6)", "class": "text-4xl font-extrabold mb-4 bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent" },
+    { "label": "Aurora gradient", "color": "linear-gradient(90deg,#8b5cf6,#ec4899)", "class": "text-4xl font-extrabold mb-4 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent" },
+    { "label": "Dark", "color": "#111827", "class": "text-4xl font-bold mb-4 text-gray-900" },
+    { "label": "Muted", "color": "#6b7280", "class": "text-4xl font-bold mb-4 text-gray-500" }
+  ],
+  "container.variants": [
+    { "label": "Default", "color": "#ffffff", "class": "max-w-6xl mx-auto px-6 py-8" },
+    { "label": "Narrow", "color": "#f9fafb", "class": "max-w-3xl mx-auto px-6 py-8" },
+    { "label": "Sunset bg", "color": "linear-gradient(135deg,#f97316,#ec4899)", "class": "max-w-6xl mx-auto px-6 py-12 bg-gradient-to-br from-orange-500 to-pink-500 rounded-2xl" },
+    { "label": "Ocean bg", "color": "linear-gradient(135deg,#06b6d4,#3b82f6)", "class": "max-w-6xl mx-auto px-6 py-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl" },
+    { "label": "Dark", "color": "#111827", "class": "max-w-6xl mx-auto px-6 py-12 bg-gray-900 text-white rounded-2xl" }
   ]
 }

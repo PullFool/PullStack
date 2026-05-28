@@ -20,6 +20,9 @@
     { "label": "Success", "color": "#36d399", "class": "btn btn-success" },
     { "label": "Warning", "color": "#fbbd23", "class": "btn btn-warning" },
     { "label": "Error", "color": "#f87272", "class": "btn btn-error" },
-    { "label": "Ghost", "color": "#ffffff", "class": "btn btn-ghost" }
+    { "label": "Ghost", "color": "#ffffff", "class": "btn btn-ghost" },
+    { "label": "Sunset", "color": "linear-gradient(90deg,#f97316,#ec4899)", "class": "btn bg-gradient-to-r from-orange-500 to-pink-500 text-white border-0 hover:brightness-110" },
+    { "label": "Ocean", "color": "linear-gradient(90deg,#06b6d4,#3b82f6)", "class": "btn bg-gradient-to-r from-cyan-500 to-blue-500 text-white border-0 hover:brightness-110" },
+    { "label": "Aurora", "color": "linear-gradient(90deg,#8b5cf6,#ec4899)", "class": "btn bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:brightness-110" }
   ]
 }
