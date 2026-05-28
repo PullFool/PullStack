@@ -11,5 +11,15 @@
   "image": "max-w-full h-auto rounded-lg",
   "container": "max-w-6xl mx-auto px-6 py-8",
   "divider": "border-t border-gray-200 my-6",
-  "input": "block w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+  "input": "block w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none",
+  "button.variants": [
+    { "label": "Blue", "color": "#2563eb", "class": "inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
+    { "label": "Green", "color": "#16a34a", "class": "inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
+    { "label": "Red", "color": "#dc2626", "class": "inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
+    { "label": "Yellow", "color": "#eab308", "class": "inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
+    { "label": "Purple", "color": "#9333ea", "class": "inline-flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
+    { "label": "Pink", "color": "#db2777", "class": "inline-flex items-center justify-center bg-pink-600 hover:bg-pink-700 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
+    { "label": "Gray", "color": "#4b5563", "class": "inline-flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white px-5 py-2.5 rounded-lg font-semibold transition" },
+    { "label": "Outline", "color": "#ffffff", "class": "inline-flex items-center justify-center bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-5 py-2 rounded-lg font-semibold transition" }
+  ]
 }

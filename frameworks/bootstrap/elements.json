@@ -11,5 +11,15 @@
   "image": "img-fluid rounded",
   "container": "container py-4",
   "divider": "my-4",
-  "input": "form-control"
+  "input": "form-control",
+  "button.variants": [
+    { "label": "Primary", "color": "#0d6efd", "class": "btn btn-primary" },
+    { "label": "Secondary", "color": "#6c757d", "class": "btn btn-secondary" },
+    { "label": "Success", "color": "#198754", "class": "btn btn-success" },
+    { "label": "Danger", "color": "#dc3545", "class": "btn btn-danger" },
+    { "label": "Warning", "color": "#ffc107", "class": "btn btn-warning" },
+    { "label": "Info", "color": "#0dcaf0", "class": "btn btn-info" },
+    { "label": "Light", "color": "#f8f9fa", "class": "btn btn-light" },
+    { "label": "Dark", "color": "#212529", "class": "btn btn-dark" }
+  ]
 }

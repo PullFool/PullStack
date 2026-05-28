@@ -116,6 +116,12 @@ const Canvas = (() => {
     return cssDefs[el.type] || '';
   }
 
+  function presetsFor(el) {
+    const key = `${el.type}.variants`;
+    const v = cssDefs[key];
+    return Array.isArray(v) ? v : [];
+  }
+
   function classFor(el) {
     const p = el.props || {};
     if (p.customClass != null) return p.customClass;
@@ -239,6 +245,7 @@ const Canvas = (() => {
     select,
     loadFrameworkAssets,
     defaultClassFor,
+    presetsFor,
     get selected() { return selectedId; }
   };
 })();

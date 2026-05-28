@@ -86,9 +86,52 @@ const Properties = (() => {
     const target = colorTargetFor(el.type);
     if (!target) return document.createComment('no color picker for this type');
 
+    const frag = document.createDocumentFragment();
+    const presets = (typeof Canvas !== 'undefined' && Canvas.presetsFor)
+      ? Canvas.presetsFor(el)
+      : [];
+
+    if (presets.length) {
+      const presetWrap = document.createElement('div');
+      presetWrap.className = 'field';
+      presetWrap.innerHTML = `
+        <span class="field-label">Framework presets</span>
+        <div class="ps-preset-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;"></div>
+        <div style="font-size:11px;opacity:0.55;margin-top:6px;line-height:1.4;">
+          Click to apply the framework's default style for this variant.
+        </div>
+      `;
+      const grid = presetWrap.querySelector('.ps-preset-grid');
+      presets.forEach(p => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'ps-preset-chip';
+        chip.title = p.class;
+        chip.style.cssText = 'display:flex;align-items:center;gap:6px;background:var(--bg-2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-align:left;transition:border-color 0.1s,background 0.1s;';
+        chip.innerHTML = `
+          <span style="width:14px;height:14px;border-radius:50%;background:${p.color};border:1px solid rgba(255,255,255,0.2);flex-shrink:0;"></span>
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.label}</span>
+        `;
+        chip.addEventListener('click', () => {
+          update(el.id, 'customClass', p.class);
+          update(el.id, 'color', null);
+        });
+        chip.addEventListener('mouseenter', () => {
+          chip.style.borderColor = 'var(--accent)';
+          chip.style.background = 'var(--bg-3)';
+        });
+        chip.addEventListener('mouseleave', () => {
+          chip.style.borderColor = 'var(--border)';
+          chip.style.background = 'var(--bg-2)';
+        });
+        grid.appendChild(chip);
+      });
+      frag.appendChild(presetWrap);
+    }
+
     const wrap = document.createElement('div');
     wrap.className = 'field';
-    const label = target === 'background' ? 'Background color' : 'Text color';
+    const label = target === 'background' ? 'Custom background color' : 'Custom text color';
     const current = (el.props && el.props.color) ? el.props.color : '';
 
     wrap.innerHTML = `
@@ -101,7 +144,7 @@ const Properties = (() => {
         <button type="button" class="hbtn ps-color-clear" style="font-size:11px;padding:6px 10px;">Clear</button>
       </div>
       <div style="font-size:11px;opacity:0.55;margin-top:6px;line-height:1.4;">
-        Sets an inline ${target === 'background' ? 'background-color' : 'color'} that overrides the framework default.
+        Overrides any preset above with a custom ${target === 'background' ? 'background' : 'text'} color.
       </div>
     `;
 
@@ -131,7 +174,8 @@ const Properties = (() => {
       update(el.id, 'color', null);
     });
 
-    return wrap;
+    frag.appendChild(wrap);
+    return frag;
   }
 
   function update(elId, key, value) {

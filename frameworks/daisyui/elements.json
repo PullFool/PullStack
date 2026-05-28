@@ -11,5 +11,15 @@
   "image": "max-w-full h-auto rounded-lg",
   "container": "container mx-auto px-6 py-8",
   "divider": "divider",
-  "input": "input input-bordered w-full"
+  "input": "input input-bordered w-full",
+  "button.variants": [
+    { "label": "Primary", "color": "#570df8", "class": "btn btn-primary" },
+    { "label": "Secondary", "color": "#f000b8", "class": "btn btn-secondary" },
+    { "label": "Accent", "color": "#37cdbe", "class": "btn btn-accent" },
+    { "label": "Info", "color": "#3abff8", "class": "btn btn-info" },
+    { "label": "Success", "color": "#36d399", "class": "btn btn-success" },
+    { "label": "Warning", "color": "#fbbd23", "class": "btn btn-warning" },
+    { "label": "Error", "color": "#f87272", "class": "btn btn-error" },
+    { "label": "Ghost", "color": "#ffffff", "class": "btn btn-ghost" }
+  ]
 }

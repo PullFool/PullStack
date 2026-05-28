@@ -11,5 +11,15 @@
   "image": "image",
   "container": "container p-5",
   "divider": "is-divider",
-  "input": "input"
+  "input": "input",
+  "button.variants": [
+    { "label": "Primary", "color": "#00d1b2", "class": "button is-primary" },
+    { "label": "Link", "color": "#485fc7", "class": "button is-link" },
+    { "label": "Info", "color": "#3e8ed0", "class": "button is-info" },
+    { "label": "Success", "color": "#48c78e", "class": "button is-success" },
+    { "label": "Warning", "color": "#ffe08a", "class": "button is-warning" },
+    { "label": "Danger", "color": "#f14668", "class": "button is-danger" },
+    { "label": "Light", "color": "#f5f5f5", "class": "button is-light" },
+    { "label": "Dark", "color": "#363636", "class": "button is-dark" }
+  ]
 }
