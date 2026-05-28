@@ -66,10 +66,46 @@ const Project = (() => {
     current = null;
     history = [];
     historyIndex = -1;
+    clearStorage();
   }
+
+  const STORAGE_KEY = 'pullstack.project';
+  let autosaveTimer = null;
 
   function touch() {
     if (current) current.updatedAt = new Date().toISOString();
+    scheduleAutosave();
+  }
+
+  function scheduleAutosave() {
+    if (autosaveTimer) clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(persistToStorage, 400);
+  }
+
+  function persistToStorage() {
+    try {
+      if (current) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+      }
+    } catch (e) { /* localStorage full or unavailable */ }
+  }
+
+  function loadFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.tree) {
+        current = parsed;
+        resetHistory();
+        return current;
+      }
+    } catch (e) { /* corrupt JSON */ }
+    return null;
+  }
+
+  function clearStorage() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
   }
 
   function addElement(el, parentId = null) {
@@ -196,6 +232,7 @@ const Project = (() => {
     addElement, removeElement, findById, updateElement,
     moveElement, isAncestor,
     undo, redo, canUndo, canRedo,
-    serialize, deserialize
+    serialize, deserialize,
+    loadFromStorage, persistToStorage, clearStorage
   };
 })();

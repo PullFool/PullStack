@@ -20,6 +20,15 @@
   populateSelect('cssFrameworkSelect', cssOptions, 'tailwind');
   populateSelect('codeFrameworkSelect', codeOptions, 'html');
 
+  const restored = Project.loadFromStorage();
+  if (restored) {
+    Sidebar.render('elementPalette');
+    enableActions();
+    updateProjectMeta();
+    await Canvas.loadFrameworkAssets(restored.cssFramework);
+    Canvas.render();
+  }
+
   $('canvasEmptyCta')?.addEventListener('click', openNewProject);
   $('newProjectCancelBtn').addEventListener('click', closeNewProject);
   $('newProjectCreateBtn').addEventListener('click', createProject);
