@@ -50,8 +50,12 @@ const Canvas = (() => {
         [data-ps-el] { position: relative; outline: 1px dashed transparent; outline-offset: 2px; cursor: pointer; transition: outline-color 0.1s; }
         [data-ps-el]:hover { outline-color: rgba(192, 132, 252, 0.5); }
         [data-ps-el].is-selected { outline: 2px solid #c084fc; }
+        [data-ps-container] { min-height: 60px; }
+        [data-ps-container]:empty::before { content: "Drop inside this container"; display: block; text-align: center; color: #d1d5db; padding: 22px 0; font-size: 12px; font-style: italic; }
+        [data-ps-container].drop-target { outline: 2px dashed #c084fc !important; background: rgba(192, 132, 252, 0.08); }
         #drop-zone { min-height: calc(100vh - 32px); }
         #drop-zone.empty-msg::before { content: "Drag elements here"; display: block; text-align: center; color: #d1d5db; padding: 80px 0; font-size: 14px; }
+        #drop-zone.drop-target { outline: 2px dashed #c084fc; outline-offset: -8px; }
       `;
 
       const html = `<!DOCTYPE html>
@@ -73,17 +77,52 @@ const Canvas = (() => {
   function attachFrameEvents() {
     if (!frameDoc) return;
 
+    let lastHover = null;
+
+    function clearHover() {
+      if (lastHover) {
+        lastHover.classList.remove('drop-target');
+        lastHover = null;
+      }
+    }
+
+    function findDropTarget(ev) {
+      const container = ev.target.closest('[data-ps-container]');
+      if (container) return { kind: 'container', el: container, parentId: container.dataset.psContainer };
+      if (frameRoot && frameRoot.contains(ev.target)) return { kind: 'root', el: frameRoot, parentId: null };
+      return null;
+    }
+
     frameDoc.addEventListener('dragover', (ev) => {
+      const drop = findDropTarget(ev);
+      if (!drop) return;
       ev.preventDefault();
       ev.dataTransfer.dropEffect = 'copy';
+      if (lastHover !== drop.el) {
+        clearHover();
+        lastHover = drop.el;
+        lastHover.classList.add('drop-target');
+      }
+    });
+
+    frameDoc.addEventListener('dragleave', (ev) => {
+      const drop = findDropTarget(ev);
+      if (!drop || drop.el !== lastHover) {
+        clearHover();
+      }
     });
 
     frameDoc.addEventListener('drop', (ev) => {
       ev.preventDefault();
       const elType = ev.dataTransfer.getData('application/x-pullstack-element');
-      if (!elType) return;
-      const el = Project.addElement({ type: elType, props: defaultPropsFor(elType) });
-      if (el) render();
+      const drop = findDropTarget(ev);
+      clearHover();
+      if (!elType || !drop) return;
+      const el = Project.addElement({ type: elType, props: defaultPropsFor(elType) }, drop.parentId);
+      if (el) {
+        render();
+        select(el.id);
+      }
     });
 
     frameDoc.addEventListener('click', (ev) => {
@@ -173,7 +212,7 @@ const Canvas = (() => {
         break;
       case 'container': {
         const children = (el.children || []).map(c => renderElementHtml(c)).join('');
-        inner = `<div${clsPart}${stylePart}>${children}</div>`;
+        inner = `<div${clsPart}${stylePart} data-ps-container="${el.id}">${children}</div>`;
         break;
       }
       case 'divider':
