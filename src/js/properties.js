@@ -45,6 +45,7 @@ const Properties = (() => {
         break;
       case 'button':
         fields.push(textField('Text', p.text, v => update(el.id, 'text', v)));
+        fields.push(onClickField(el));
         break;
       case 'link':
         fields.push(textField('Text', p.text, v => update(el.id, 'text', v)));
@@ -61,10 +62,98 @@ const Properties = (() => {
       case 'container':
       case 'divider':
         break;
+      case 'modal':
+        fields.push(textField('Title', p.title, v => update(el.id, 'title', v)));
+        fields.push(textField('Modal ID', p.modalId, v => update(el.id, 'modalId', v)));
+        fields.push(checkboxField('Dismissable (close on overlay click)', p.dismissable !== false, v => update(el.id, 'dismissable', v)));
+        break;
     }
 
     fields.push(classField(el));
     return fields;
+  }
+
+  function checkboxField(label, value, onChange) {
+    const wrap = document.createElement('label');
+    wrap.className = 'field';
+    wrap.style.cssText = 'display:flex;align-items:center;gap:8px;cursor:pointer;';
+    wrap.innerHTML = `
+      <input type="checkbox" style="width:16px;height:16px;accent-color:var(--accent);" />
+      <span style="font-size:13px;">${label}</span>
+    `;
+    const cb = wrap.querySelector('input');
+    cb.checked = !!value;
+    cb.addEventListener('change', () => onChange(cb.checked));
+    return wrap;
+  }
+
+  function onClickField(el) {
+    const wrap = document.createElement('div');
+    wrap.className = 'field';
+    const oc = (el.props && el.props.onClick) || { action: 'none', target: '' };
+
+    const actions = [
+      { value: 'none', label: 'No action' },
+      { value: 'url', label: 'Go to URL' },
+      { value: 'scroll', label: 'Scroll to section' },
+      { value: 'open-modal', label: 'Open modal' },
+      { value: 'close-modal', label: 'Close modal' },
+      { value: 'toggle', label: 'Toggle visibility' }
+    ];
+
+    wrap.innerHTML = `
+      <span class="field-label">On click</span>
+      <select class="ps-onclick-action" style="width:100%;background:var(--bg-1);border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;">
+        ${actions.map(a => `<option value="${a.value}"${a.value === oc.action ? ' selected' : ''}>${a.label}</option>`).join('')}
+      </select>
+      <div class="ps-onclick-target" style="margin-top:8px;${oc.action === 'none' ? 'display:none;' : ''}">
+        <span class="field-label" style="display:block;margin-bottom:4px;" id="psOnclickTargetLabel">Target</span>
+        <input type="text" class="ps-onclick-target-input" placeholder="" style="width:100%;background:var(--bg-1);border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;font-family:ui-monospace,Menlo,monospace;" />
+      </div>
+    `;
+
+    const sel = wrap.querySelector('.ps-onclick-action');
+    const targetWrap = wrap.querySelector('.ps-onclick-target');
+    const targetLabel = wrap.querySelector('#psOnclickTargetLabel');
+    const targetInput = wrap.querySelector('.ps-onclick-target-input');
+    targetInput.value = oc.target || '';
+
+    function updateTargetUI(action) {
+      const placeholders = {
+        url: 'https://example.com',
+        scroll: 'section-id',
+        'open-modal': 'modal_xxxxxx',
+        'close-modal': 'modal_xxxxxx',
+        toggle: 'element-id'
+      };
+      const labels = {
+        url: 'URL',
+        scroll: 'Section ID',
+        'open-modal': 'Modal ID',
+        'close-modal': 'Modal ID',
+        toggle: 'Target element ID'
+      };
+      if (action === 'none') {
+        targetWrap.style.display = 'none';
+      } else {
+        targetWrap.style.display = '';
+        targetLabel.textContent = labels[action];
+        targetInput.placeholder = placeholders[action];
+      }
+    }
+
+    updateTargetUI(oc.action);
+
+    sel.addEventListener('change', () => {
+      const newAction = sel.value;
+      updateTargetUI(newAction);
+      update(el.id, 'onClick', { action: newAction, target: targetInput.value });
+    });
+    targetInput.addEventListener('input', () => {
+      update(el.id, 'onClick', { action: sel.value, target: targetInput.value });
+    });
+
+    return wrap;
   }
 
   function colorTargetFor(type) {

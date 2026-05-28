@@ -173,12 +173,13 @@ const Canvas = (() => {
     switch (type) {
       case 'heading': return { text: 'Heading', level: 1 };
       case 'text': return { text: 'Lorem ipsum dolor sit amet.' };
-      case 'button': return { text: 'Click me', onClick: { action: 'none' } };
+      case 'button': return { text: 'Click me', onClick: { action: 'none', target: '' } };
       case 'link': return { text: 'Read more', href: '#' };
       case 'image': return { src: 'https://placehold.co/600x400', alt: 'Image' };
       case 'container': return { layout: 'block' };
       case 'divider': return {};
       case 'input': return { placeholder: 'Enter text...', type: 'text' };
+      case 'modal': return { title: 'Modal title', modalId: 'modal_' + Math.random().toString(36).slice(2, 8), dismissable: true };
       default: return {};
     }
   }
@@ -247,6 +248,20 @@ const Canvas = (() => {
       case 'container': {
         const children = (el.children || []).map(c => renderElementHtml(c)).join('');
         inner = `<div${clsPart}${stylePart} data-ps-container="${el.id}">${children}</div>`;
+        break;
+      }
+      case 'modal': {
+        const children = (el.children || []).map(c => renderElementHtml(c)).join('');
+        const modalCls = cssDefs.modal || '';
+        inner = `
+          <div data-ps-modal-wrap style="margin:16px 0;padding:0;border:2px dashed rgba(192,132,252,0.5);border-radius:10px;background:rgba(192,132,252,0.04);">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(192,132,252,0.15);border-radius:8px 8px 0 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#c084fc;">
+              <span>🪟 Modal · id="${escape(p.modalId || '')}"</span>
+              <span style="font-size:11px;font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7;">${escape(p.title || '')}</span>
+            </div>
+            <div class="ps-modal-body ${modalCls}" data-ps-container="${el.id}" style="padding:16px;min-height:60px;">${children}</div>
+          </div>
+        `;
         break;
       }
       case 'divider':

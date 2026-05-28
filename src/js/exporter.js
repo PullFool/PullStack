@@ -48,11 +48,20 @@ const Exporter = (() => {
     const codeManifest = await loadJson(`exporters/${project.codeFramework}/manifest.json${bust}`) || {};
     const codeTemplate = await loadText(`exporters/${project.codeFramework}/template${codeManifest.extension || '.html'}${bust}`) || '{{CONTENT}}';
 
-    const html = renderTree(project.tree, cssDefs);
+    const features = { needsModalJs: false };
+    const html = renderTree(project.tree, cssDefs, features);
     const headInjection = cssCdn.trim();
+    let finalHtml = html;
+    if (features.needsModalJs) {
+      finalHtml += `\n<script>
+function openModal(id){var m=document.getElementById(id);if(m){m.style.display='flex';}}
+function closeModal(id){var m=document.getElementById(id);if(m){m.style.display='none';}}
+function toggleElement(id){var el=document.getElementById(id);if(el){el.style.display=el.style.display==='none'?'':'none';}}
+</script>`;
+    }
     const output = codeTemplate
       .replace('{{HEAD}}', headInjection)
-      .replace('{{CONTENT}}', html)
+      .replace('{{CONTENT}}', finalHtml)
       .replace('{{TITLE}}', project.name || 'Untitled');
 
     return {
@@ -61,11 +70,34 @@ const Exporter = (() => {
     };
   }
 
-  function renderTree(tree, cssDefs) {
-    return tree.map(el => renderElement(el, cssDefs)).join('\n');
+  function renderTree(tree, cssDefs, features) {
+    return tree.map(el => renderElement(el, cssDefs, features)).join('\n');
   }
 
-  function renderElement(el, cssDefs) {
+  function buttonOnClickAttr(onClick, features) {
+    if (!onClick || onClick.action === 'none') return '';
+    const target = (onClick.target || '').replace(/'/g, "\\'");
+    switch (onClick.action) {
+      case 'url':
+        return ` onclick="window.location.href='${target}'"`;
+      case 'scroll':
+        return ` onclick="document.getElementById('${target}').scrollIntoView({behavior:'smooth'})"`;
+      case 'open-modal':
+        features.needsModalJs = true;
+        return ` onclick="openModal('${target}')"`;
+      case 'close-modal':
+        features.needsModalJs = true;
+        return ` onclick="closeModal('${target}')"`;
+      case 'toggle':
+        features.needsModalJs = true;
+        return ` onclick="toggleElement('${target}')"`;
+      default:
+        return '';
+    }
+  }
+
+  function renderElement(el, cssDefs, features) {
+    features = features || { needsModalJs: false };
     const p = el.props || {};
     const baseCls = cssDefs[el.type] || '';
     const baseForLevel = el.type === 'heading' ? (cssDefs[`heading.${p.level || 1}`] || baseCls) : baseCls;
@@ -81,20 +113,29 @@ const Exporter = (() => {
         return `<h${p.level || 1}${classAttr}${styleAttr}>${esc(p.text)}</h${p.level || 1}>`;
       case 'text':
         return `<p${classAttr}${styleAttr}>${esc(p.text)}</p>`;
-      case 'button':
-        return `<button type="button"${classAttr}${styleAttr}>${esc(p.text)}</button>`;
+      case 'button': {
+        const onClickAttr = buttonOnClickAttr(p.onClick, features);
+        return `<button type="button"${classAttr}${styleAttr}${onClickAttr}>${esc(p.text)}</button>`;
+      }
       case 'link':
         return `<a href="${esc(p.href)}"${classAttr}${styleAttr}>${esc(p.text)}</a>`;
       case 'image':
         return `<img src="${esc(p.src)}" alt="${esc(p.alt)}"${classAttr} />`;
       case 'container': {
-        const inner = (el.children || []).map(c => renderElement(c, cssDefs)).join('\n');
+        const inner = (el.children || []).map(c => renderElement(c, cssDefs, features)).join('\n');
         return `<div${classAttr}${styleAttr}>\n${inner}\n</div>`;
       }
       case 'divider':
         return `<hr${classAttr}${styleAttr} />`;
       case 'input':
         return `<input type="${esc(p.type || 'text')}" placeholder="${esc(p.placeholder)}"${classAttr} />`;
+      case 'modal': {
+        features.needsModalJs = true;
+        const inner = (el.children || []).map(c => renderElement(c, cssDefs, features)).join('\n');
+        const modalId = esc(p.modalId || 'modal_' + Math.random().toString(36).slice(2, 8));
+        const dismissAttr = p.dismissable !== false ? ` onclick="if(event.target===this)closeModal('${modalId}')"` : '';
+        return `<div id="${modalId}" class="${cssDefs.modal || ''}" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:100;"${dismissAttr}>\n<div style="background:#fff;padding:24px;border-radius:8px;max-width:520px;width:90%;max-height:90vh;overflow:auto;">\n${p.title ? `<h3 style="margin:0 0 12px;">${esc(p.title)}</h3>` : ''}\n${inner}\n</div>\n</div>`;
+      }
       default:
         return `<div${classAttr}${styleAttr}>${esc(el.type)}</div>`;
     }

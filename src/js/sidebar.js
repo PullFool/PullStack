@@ -9,7 +9,8 @@ const Sidebar = (() => {
     { type: 'image', label: 'Image', icon: '🖼' },
     { type: 'container', label: 'Container', icon: '▢' },
     { type: 'divider', label: 'Divider', icon: '—' },
-    { type: 'input', label: 'Input', icon: '⌨' }
+    { type: 'input', label: 'Input', icon: '⌨' },
+    { type: 'modal', label: 'Modal', icon: '🪟' }
   ];
 
   function render(target) {
