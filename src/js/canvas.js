@@ -7,6 +7,7 @@ const Canvas = (() => {
   let frameRoot = null;
   let selectedId = null;
   let onSelectCb = null;
+  let onMutateCb = null;
   let cssDefs = {};
   let currentCdn = '';
   let previewMode = false;
@@ -21,6 +22,7 @@ const Canvas = (() => {
     canvasEl = typeof target === 'string' ? document.getElementById(target) : target;
     if (!canvasEl) return;
     onSelectCb = opts.onSelect || (() => {});
+    onMutateCb = opts.onMutate || (() => {});
     showEmptyState(false);
   }
 
@@ -171,6 +173,7 @@ const Canvas = (() => {
         if (moved) {
           render();
           select(moveId);
+          onMutateCb();
         }
         return;
       }
@@ -179,11 +182,9 @@ const Canvas = (() => {
       if (!elType) return;
       const el = Project.addElement({ type: elType, props: defaultPropsFor(elType) }, drop.parentId);
       if (el) {
-        if (elType === 'modal' && !drop.parentId && Project.setActiveModal) {
-          Project.setActiveModal(el.id);
-        }
         render();
         select(el.id);
+        onMutateCb();
       }
     });
 

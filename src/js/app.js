@@ -16,6 +16,11 @@
     onSelect: (id) => {
       Properties.show(id);
       Layers.render(id);
+    },
+    onMutate: () => {
+      Layers.render(Canvas.selected);
+      renderPages();
+      updateCodeView();
     }
   });
 
