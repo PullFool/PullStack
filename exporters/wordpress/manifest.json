@@ -1,0 +1,8 @@
+{
+  "name": "WordPress Template",
+  "version": "6.x",
+  "description": "Custom WordPress page template",
+  "icon": "📰",
+  "extension": ".php",
+  "outputFolder": "wp-content/themes/your-theme/"
+}

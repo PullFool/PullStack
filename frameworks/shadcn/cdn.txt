@@ -1,0 +1,2 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- shadcn/ui is copy-paste components; install via `npx shadcn-ui@latest add ...` in your React project -->

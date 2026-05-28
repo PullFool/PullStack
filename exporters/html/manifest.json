@@ -1,0 +1,8 @@
+{
+  "name": "Plain HTML",
+  "version": "5",
+  "description": "Standalone HTML5 file",
+  "icon": "📄",
+  "extension": ".html",
+  "outputFolder": "."
+}

@@ -1,0 +1,15 @@
+{
+  "heading.1": "scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4",
+  "heading.2": "scroll-m-20 text-3xl font-semibold tracking-tight mb-3",
+  "heading.3": "scroll-m-20 text-2xl font-semibold tracking-tight mb-3",
+  "heading.4": "scroll-m-20 text-xl font-semibold tracking-tight mb-2",
+  "heading.5": "scroll-m-20 text-lg font-semibold tracking-tight mb-2",
+  "heading.6": "scroll-m-20 text-base font-semibold tracking-tight mb-2",
+  "text": "leading-7 mb-3",
+  "button": "inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90",
+  "link": "font-medium text-primary underline underline-offset-4",
+  "image": "rounded-md",
+  "container": "container mx-auto py-8",
+  "divider": "shrink-0 bg-border h-[1px] w-full my-6",
+  "input": "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+}

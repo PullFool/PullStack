@@ -1,0 +1,8 @@
+{
+  "name": "Inertia + Vue 3",
+  "version": "1.x",
+  "description": "Inertia.js page component for Laravel + Vue 3",
+  "icon": "⚡",
+  "extension": ".vue",
+  "outputFolder": "resources/js/Pages/"
+}

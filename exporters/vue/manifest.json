@@ -1,0 +1,8 @@
+{
+  "name": "Vue 3 SFC",
+  "version": "3.x",
+  "description": "Vue 3 single-file component",
+  "icon": "💚",
+  "extension": ".vue",
+  "outputFolder": "src/components/"
+}

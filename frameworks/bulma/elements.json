@@ -1,0 +1,15 @@
+{
+  "heading.1": "title is-1",
+  "heading.2": "title is-2",
+  "heading.3": "title is-3",
+  "heading.4": "title is-4",
+  "heading.5": "title is-5",
+  "heading.6": "title is-6",
+  "text": "content",
+  "button": "button is-primary",
+  "link": "has-text-link",
+  "image": "image",
+  "container": "container p-5",
+  "divider": "is-divider",
+  "input": "input"
+}

@@ -1,0 +1,15 @@
+{
+  "heading.1": "text-4xl font-bold mb-4",
+  "heading.2": "text-3xl font-bold mb-3",
+  "heading.3": "text-2xl font-semibold mb-3",
+  "heading.4": "text-xl font-semibold mb-2",
+  "heading.5": "text-lg font-semibold mb-2",
+  "heading.6": "text-base font-semibold mb-2",
+  "text": "text-base mb-3 leading-relaxed",
+  "button": "btn btn-primary",
+  "link": "link link-primary",
+  "image": "max-w-full h-auto rounded-lg",
+  "container": "container mx-auto px-6 py-8",
+  "divider": "divider",
+  "input": "input input-bordered w-full"
+}

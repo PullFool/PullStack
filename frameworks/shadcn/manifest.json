@@ -1,0 +1,8 @@
+{
+  "name": "shadcn/ui (React)",
+  "version": "0.x",
+  "description": "Copy-paste React component library on Tailwind",
+  "icon": "⬛",
+  "type": "css-framework",
+  "requires": "react"
+}

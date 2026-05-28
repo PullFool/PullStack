@@ -1,0 +1,28 @@
+{
+  "name": "pullstack",
+  "version": "0.1.0",
+  "description": "Drag-and-drop page builder. Design once, export to your stack.",
+  "main": "main.html",
+  "author": "PullFool",
+  "license": "UNLICENSED",
+  "private": true,
+  "window": {
+    "title": "PullStack",
+    "width": 1400,
+    "height": 900,
+    "min_width": 1024,
+    "min_height": 700,
+    "icon": "src/assets/icon.png",
+    "frame": true,
+    "show": true,
+    "resizable": true
+  },
+  "chromium-args": "--enable-features=OverlayScrollbar --disable-features=AutofillEnableAccountWalletStorage",
+  "scripts": {
+    "start": "nw .",
+    "build": "echo Build step not yet configured"
+  },
+  "devDependencies": {
+    "nw": "^0.85.0"
+  }
+}

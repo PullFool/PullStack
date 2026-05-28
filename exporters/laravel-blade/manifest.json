@@ -1,0 +1,8 @@
+{
+  "name": "Laravel Blade",
+  "version": "10.x / 11.x",
+  "description": "Blade view template for Laravel",
+  "icon": "🐘",
+  "extension": ".blade.php",
+  "outputFolder": "resources/views/"
+}

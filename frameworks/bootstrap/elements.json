@@ -1,0 +1,15 @@
+{
+  "heading.1": "display-4 fw-bold mb-3",
+  "heading.2": "display-5 fw-bold mb-3",
+  "heading.3": "h3 fw-semibold mb-3",
+  "heading.4": "h4 fw-semibold mb-2",
+  "heading.5": "h5 fw-semibold mb-2",
+  "heading.6": "h6 fw-semibold mb-2",
+  "text": "lead mb-3",
+  "button": "btn btn-primary",
+  "link": "link-primary",
+  "image": "img-fluid rounded",
+  "container": "container py-4",
+  "divider": "my-4",
+  "input": "form-control"
+}
