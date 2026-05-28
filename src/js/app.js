@@ -57,6 +57,19 @@
       if (typeof nw !== 'undefined' && nw.Window && nw.Window.get) {
         nw.Window.get().showDevTools();
       }
+      return;
+    }
+    if (ev.key === 'F5') {
+      ev.preventDefault();
+      enterPreview();
+      return;
+    }
+    if (ev.key === 'Escape') {
+      if (document.body.classList.contains('preview-mode')) {
+        exitPreview();
+      } else {
+        document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+      }
     }
   });
 
@@ -184,7 +197,9 @@
       case 'new': openNewProject(); break;
       case 'open': openProject(); break;
       case 'save': saveProject(); break;
+      case 'save-as': saveProjectAs(); break;
       case 'export': exportProject(); break;
+      case 'close-project': closeProject(); break;
       case 'undo':
         if (Project.undo()) {
           Canvas.render();
@@ -207,6 +222,9 @@
           Properties.show(null);
         }
         break;
+      case 'preview': enterPreview(); break;
+      case 'toggle-sidebar': document.querySelector('.sidebar').classList.toggle('hidden'); break;
+      case 'toggle-properties': document.querySelector('.properties').classList.toggle('hidden'); break;
       case 'reload-window':
         location.reload();
         break;
@@ -220,13 +238,58 @@
         refreshFrameworks();
         break;
       case 'about':
-        toast('PullStack v0.1.0 — drag-and-drop page builder', 'success');
+        $('aboutModal').classList.add('active');
+        break;
+      case 'shortcuts':
+        $('shortcutsModal').classList.add('active');
         break;
       case 'docs':
-        toast('Docs coming soon at github.com/PullFool/PullStack', 'success');
+        if (typeof nw !== 'undefined' && nw.Shell) {
+          nw.Shell.openExternal('https://github.com/PullFool/PullStack');
+        } else {
+          toast('Opening docs requires NW.js', 'success');
+        }
         break;
     }
   }
+
+  function saveProjectAs() {
+    const p = Project.get();
+    if (!p) return;
+    const newName = prompt('Save project as:', p.name);
+    if (!newName || !newName.trim()) return;
+    p.name = newName.trim();
+    saveProject();
+    updateProjectMeta();
+  }
+
+  function closeProject() {
+    if (!confirm('Close current project? Unsaved changes will be lost.')) return;
+    Project.clear();
+    Sidebar.clear('elementPalette');
+    Canvas.loadFrameworkAssets(null);
+    Properties.show(null);
+    document.querySelectorAll('.menu-item[data-needs-project]').forEach(el => {
+      el.classList.add('disabled');
+    });
+    $('saveProjectBtn').disabled = true;
+    $('exportBtn').disabled = true;
+    $('projectMeta').innerHTML = '<span class="meta-label">No project</span>';
+    toast('Project closed', 'success');
+  }
+
+  function enterPreview() {
+    if (!Project.get()) return;
+    document.body.classList.add('preview-mode');
+  }
+
+  function exitPreview() {
+    document.body.classList.remove('preview-mode');
+  }
+
+  $('previewExitBtn')?.addEventListener('click', exitPreview);
+  $('aboutCloseBtn')?.addEventListener('click', () => $('aboutModal').classList.remove('active'));
+  $('shortcutsCloseBtn')?.addEventListener('click', () => $('shortcutsModal').classList.remove('active'));
 
   async function refreshFrameworks() {
     const p = Project.get();

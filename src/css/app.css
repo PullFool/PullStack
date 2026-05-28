@@ -197,6 +197,21 @@ input, select, textarea {
   border-right: none;
   border-left: 1px solid var(--border);
 }
+.sidebar.hidden, .properties.hidden {
+  display: none;
+}
+.workspace {
+  transition: grid-template-columns 0.15s;
+}
+.workspace:has(.sidebar.hidden):has(.properties.hidden) {
+  grid-template-columns: 1fr;
+}
+.workspace:has(.sidebar.hidden):not(:has(.properties.hidden)) {
+  grid-template-columns: 1fr var(--properties-w);
+}
+.workspace:has(.properties.hidden):not(:has(.sidebar.hidden)) {
+  grid-template-columns: var(--sidebar-w) 1fr;
+}
 
 .panel-title {
   font-size: 11px;
@@ -251,6 +266,49 @@ input, select, textarea {
   flex-direction: column;
   background: var(--bg-0);
   min-width: 0;
+}
+
+body.preview-mode .app-header,
+body.preview-mode .sidebar,
+body.preview-mode .properties,
+body.preview-mode .canvas-toolbar {
+  display: none !important;
+}
+body.preview-mode .workspace {
+  grid-template-columns: 1fr;
+  height: 100vh;
+}
+body.preview-mode .canvas-scroller {
+  padding: 0;
+}
+body.preview-mode .canvas {
+  max-width: none;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 100vh;
+}
+.preview-exit {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1500;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: none;
+  backdrop-filter: blur(8px);
+  -webkit-app-region: no-drag;
+}
+body.preview-mode .preview-exit {
+  display: block;
+}
+.preview-exit:hover {
+  background: rgba(239, 68, 68, 0.8);
 }
 
 .canvas-toolbar {

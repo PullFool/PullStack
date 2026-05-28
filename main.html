@@ -26,8 +26,11 @@
         <div class="menu-item" data-act="new"><span>＋ New project</span><span class="shortcut">Ctrl+N</span></div>
         <div class="menu-item" data-act="open"><span>📂 Open...</span><span class="shortcut">Ctrl+O</span></div>
         <div class="menu-item disabled" data-act="save" data-needs-project="1"><span>💾 Save</span><span class="shortcut">Ctrl+S</span></div>
+        <div class="menu-item disabled" data-act="save-as" data-needs-project="1"><span>📝 Save as...</span></div>
         <div class="menu-separator"></div>
         <div class="menu-item disabled" data-act="export" data-needs-project="1"><span>📤 Export...</span><span class="shortcut">Ctrl+E</span></div>
+        <div class="menu-separator"></div>
+        <div class="menu-item disabled" data-act="close-project" data-needs-project="1"><span>✕ Close project</span></div>
       </div>
     </div>
 
@@ -45,6 +48,9 @@
       View
       <div class="menu-dropdown">
         <div class="menu-item disabled" data-act="preview" data-needs-project="1"><span>▶ Preview mode</span><span class="shortcut">F5</span></div>
+        <div class="menu-item" data-act="toggle-sidebar"><span>◧ Toggle sidebar</span></div>
+        <div class="menu-item" data-act="toggle-properties"><span>▦ Toggle properties</span></div>
+        <div class="menu-separator"></div>
         <div class="menu-item" data-act="reload-window"><span>↻ Reload window</span><span class="shortcut">Ctrl+R</span></div>
         <div class="menu-item" data-act="devtools"><span>🛠 DevTools</span><span class="shortcut">F12</span></div>
       </div>
@@ -61,8 +67,10 @@
     <div class="menubar-item" data-menu="help">
       Help
       <div class="menu-dropdown">
-        <div class="menu-item" data-act="about"><span>ℹ About PullStack</span></div>
+        <div class="menu-item" data-act="shortcuts"><span>⌨ Keyboard shortcuts</span></div>
         <div class="menu-item" data-act="docs"><span>📖 Documentation</span></div>
+        <div class="menu-separator"></div>
+        <div class="menu-item" data-act="about"><span>ℹ About PullStack</span></div>
       </div>
     </div>
   </nav>
@@ -137,6 +145,48 @@
     <div class="modal-actions">
       <button class="btn-secondary" id="newProjectCancelBtn">Cancel</button>
       <button class="btn-primary" id="newProjectCreateBtn">Create →</button>
+    </div>
+  </div>
+</div>
+
+<button type="button" class="preview-exit" id="previewExitBtn" title="Exit preview (Esc)">✕ Exit preview</button>
+
+<div class="modal-overlay" id="aboutModal">
+  <div class="modal" style="max-width:380px;text-align:center;">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="width:64px;height:64px;margin:0 auto 12px;display:block;">
+      <rect x="3" y="3" width="11" height="11" rx="2" fill="#c084fc" />
+      <rect x="18" y="3" width="11" height="11" rx="2" fill="#ff6b9d" />
+      <rect x="3" y="18" width="11" height="11" rx="2" fill="#60a5fa" />
+      <rect x="18" y="18" width="11" height="11" rx="2" fill="#34d399" />
+    </svg>
+    <h2 style="font-size:22px;margin-bottom:4px;background:linear-gradient(90deg,#ff6b9d,#c084fc,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">PullStack</h2>
+    <div style="font-size:12px;opacity:0.55;margin-bottom:16px;">v0.1.0 · drag-and-drop page builder</div>
+    <div style="font-size:13px;opacity:0.8;line-height:1.6;margin-bottom:20px;">
+      Design once, export to your stack.<br>
+      <a href="https://github.com/PullFool/PullStack" target="_blank" style="color:#c084fc;">github.com/PullFool/PullStack</a>
+    </div>
+    <button class="btn-primary" id="aboutCloseBtn" style="width:100%;">Close</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="shortcutsModal">
+  <div class="modal" style="max-width:480px;">
+    <h2 class="modal-title">Keyboard shortcuts</h2>
+    <table style="width:100%;font-size:13px;line-height:1.9;">
+      <tr><td style="opacity:0.7;">New project</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">Ctrl+N</td></tr>
+      <tr><td style="opacity:0.7;">Open project</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">Ctrl+O</td></tr>
+      <tr><td style="opacity:0.7;">Save</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">Ctrl+S</td></tr>
+      <tr><td style="opacity:0.7;">Export</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">Ctrl+E</td></tr>
+      <tr><td style="opacity:0.7;">Undo</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">Ctrl+Z</td></tr>
+      <tr><td style="opacity:0.7;">Redo</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">Ctrl+Y / Ctrl+Shift+Z</td></tr>
+      <tr><td style="opacity:0.7;">Delete selected</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">Del</td></tr>
+      <tr><td style="opacity:0.7;">Preview mode</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">F5</td></tr>
+      <tr><td style="opacity:0.7;">Exit preview</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">Esc</td></tr>
+      <tr><td style="opacity:0.7;">Reload window</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">Ctrl+R</td></tr>
+      <tr><td style="opacity:0.7;">DevTools</td><td style="text-align:right;font-family:ui-monospace,Menlo,monospace;opacity:0.7;">F12</td></tr>
+    </table>
+    <div class="modal-actions">
+      <button class="btn-primary" id="shortcutsCloseBtn">Close</button>
     </div>
   </div>
 </div>
