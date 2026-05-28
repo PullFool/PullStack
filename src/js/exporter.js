@@ -49,7 +49,8 @@ const Exporter = (() => {
     const codeTemplate = await loadText(`exporters/${project.codeFramework}/template${codeManifest.extension || '.html'}${bust}`) || '{{CONTENT}}';
 
     const features = { needsModalJs: false };
-    const html = renderTree(project.tree, cssDefs, features);
+    const ctx = { extension: codeManifest.extension || '.html' };
+    const html = renderTree(project.tree, cssDefs, features, ctx);
     const headInjection = cssCdn.trim();
     let finalHtml = html;
     if (features.needsModalJs) {
@@ -70,16 +71,20 @@ function toggleElement(id){var el=document.getElementById(id);if(el){el.style.di
     };
   }
 
-  function renderTree(tree, cssDefs, features) {
-    return tree.map(el => renderElement(el, cssDefs, features)).join('\n');
+  function renderTree(tree, cssDefs, features, ctx) {
+    return tree.map(el => renderElement(el, cssDefs, features, ctx)).join('\n');
   }
 
-  function buttonOnClickAttr(onClick, features) {
+  function buttonOnClickAttr(onClick, features, ctx) {
     if (!onClick || onClick.action === 'none') return '';
     const target = (onClick.target || '').replace(/'/g, "\\'");
     switch (onClick.action) {
       case 'url':
         return ` onclick="window.location.href='${target}'"`;
+      case 'page': {
+        const ext = (ctx && ctx.extension) || '.html';
+        return ` onclick="window.location.href='${target}${ext}'"`;
+      }
       case 'scroll':
         return ` onclick="document.getElementById('${target}').scrollIntoView({behavior:'smooth'})"`;
       case 'open-modal':
@@ -96,8 +101,9 @@ function toggleElement(id){var el=document.getElementById(id);if(el){el.style.di
     }
   }
 
-  function renderElement(el, cssDefs, features) {
+  function renderElement(el, cssDefs, features, ctx) {
     features = features || { needsModalJs: false };
+    ctx = ctx || {};
     const p = el.props || {};
     const baseCls = cssDefs[el.type] || '';
     const baseForLevel = el.type === 'heading' ? (cssDefs[`heading.${p.level || 1}`] || baseCls) : baseCls;
@@ -114,7 +120,7 @@ function toggleElement(id){var el=document.getElementById(id);if(el){el.style.di
       case 'text':
         return `<p${classAttr}${styleAttr}>${esc(p.text)}</p>`;
       case 'button': {
-        const onClickAttr = buttonOnClickAttr(p.onClick, features);
+        const onClickAttr = buttonOnClickAttr(p.onClick, features, ctx);
         return `<button type="button"${classAttr}${styleAttr}${onClickAttr}>${esc(p.text)}</button>`;
       }
       case 'link':
@@ -195,7 +201,8 @@ function toggleElement(id){var el=document.getElementById(id);if(el){el.style.di
 
     pages.forEach(page => {
       const features = { needsModalJs: false };
-      const html = renderTree(page.tree, cssDefs, features);
+      const ctx = { extension: ext };
+      const html = renderTree(page.tree, cssDefs, features, ctx);
       const headInjection = cssCdn.trim();
       let body = html;
       if (features.needsModalJs) {

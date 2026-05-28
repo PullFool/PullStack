@@ -119,6 +119,7 @@ const Properties = (() => {
     const actions = [
       { value: 'none', label: 'No action' },
       { value: 'url', label: 'Go to URL' },
+      { value: 'page', label: 'Go to page' },
       { value: 'scroll', label: 'Scroll to section' },
       { value: 'open-modal', label: 'Open modal' },
       { value: 'close-modal', label: 'Close modal' },
@@ -132,7 +133,8 @@ const Properties = (() => {
       </select>
       <div class="ps-onclick-target" style="margin-top:8px;${oc.action === 'none' ? 'display:none;' : ''}">
         <span class="field-label" style="display:block;margin-bottom:4px;" id="psOnclickTargetLabel">Target</span>
-        <input type="text" class="ps-onclick-target-input" placeholder="" style="width:100%;background:var(--bg-1);border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;font-family:ui-monospace,Menlo,monospace;" />
+        <input type="text" class="ps-onclick-target-input" placeholder="" style="width:100%;background:var(--bg-1);border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;font-family:ui-monospace,Menlo,monospace;display:none;" />
+        <select class="ps-onclick-target-select" style="width:100%;background:var(--bg-1);border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;display:none;"></select>
       </div>
     `;
 
@@ -140,6 +142,7 @@ const Properties = (() => {
     const targetWrap = wrap.querySelector('.ps-onclick-target');
     const targetLabel = wrap.querySelector('#psOnclickTargetLabel');
     const targetInput = wrap.querySelector('.ps-onclick-target-input');
+    const targetSelect = wrap.querySelector('.ps-onclick-target-select');
     targetInput.value = oc.target || '';
 
     function updateTargetUI(action) {
@@ -152,6 +155,7 @@ const Properties = (() => {
       };
       const labels = {
         url: 'URL',
+        page: 'Page',
         scroll: 'Section ID',
         'open-modal': 'Modal ID',
         'close-modal': 'Modal ID',
@@ -159,10 +163,21 @@ const Properties = (() => {
       };
       if (action === 'none') {
         targetWrap.style.display = 'none';
+        return;
+      }
+      targetWrap.style.display = '';
+      targetLabel.textContent = labels[action];
+      if (action === 'page') {
+        targetInput.style.display = 'none';
+        targetSelect.style.display = '';
+        const pages = (typeof Project !== 'undefined' && Project.getPages) ? Project.getPages() : [];
+        targetSelect.innerHTML = pages.map(p =>
+          `<option value="${p.name}"${p.name === oc.target ? ' selected' : ''}>${p.name}</option>`
+        ).join('') || '<option value="">(no pages)</option>';
       } else {
-        targetWrap.style.display = '';
-        targetLabel.textContent = labels[action];
-        targetInput.placeholder = placeholders[action];
+        targetInput.style.display = '';
+        targetSelect.style.display = 'none';
+        targetInput.placeholder = placeholders[action] || '';
       }
     }
 
@@ -171,10 +186,14 @@ const Properties = (() => {
     sel.addEventListener('change', () => {
       const newAction = sel.value;
       updateTargetUI(newAction);
-      update(el.id, 'onClick', { action: newAction, target: targetInput.value });
+      const target = newAction === 'page' ? targetSelect.value : targetInput.value;
+      update(el.id, 'onClick', { action: newAction, target });
     });
     targetInput.addEventListener('input', () => {
       update(el.id, 'onClick', { action: sel.value, target: targetInput.value });
+    });
+    targetSelect.addEventListener('change', () => {
+      update(el.id, 'onClick', { action: 'page', target: targetSelect.value });
     });
 
     return wrap;
