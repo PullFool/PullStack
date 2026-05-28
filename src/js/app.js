@@ -508,10 +508,18 @@
       return;
     }
     if (action === 'open-modal') {
-      targetEl.style.display = 'flex';
+      if (targetEl.hasAttribute('data-ps-modal-wrap')) {
+        targetEl.classList.add('ps-showing');
+      } else {
+        targetEl.style.display = 'flex';
+      }
       toast(`Opened modal: ${target}`, 'success');
     } else if (action === 'close-modal') {
-      targetEl.style.display = 'none';
+      if (targetEl.hasAttribute('data-ps-modal-wrap')) {
+        targetEl.classList.remove('ps-showing');
+      } else {
+        targetEl.style.display = 'none';
+      }
       toast(`Closed modal: ${target}`, 'success');
     } else if (action === 'toggle') {
       targetEl.style.display = targetEl.style.display === 'none' ? '' : 'none';

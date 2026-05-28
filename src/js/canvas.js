@@ -63,6 +63,24 @@ const Canvas = (() => {
         #drop-zone { min-height: calc(100vh - 32px); }
         #drop-zone.empty-msg::before { content: "Drag elements here"; display: block; text-align: center; color: #d1d5db; padding: 80px 0; font-size: 14px; }
         #drop-zone.drop-target { outline: 2px dashed #c084fc; outline-offset: -8px; }
+        [data-ps-modal-wrap].ps-showing {
+          position: fixed !important;
+          top: 50% !important; left: 50% !important;
+          transform: translate(-50%, -50%);
+          max-width: 600px; width: 90%; max-height: 90vh; overflow: auto;
+          z-index: 9999;
+          margin: 0 !important;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 100vmax rgba(0,0,0,0.5);
+          border-color: #c084fc !important;
+        }
+        [data-ps-modal-wrap].ps-showing .ps-modal-close {
+          display: inline-block;
+          margin-left: 8px;
+          cursor: pointer;
+          color: #ef4444;
+          font-weight: 700;
+        }
+        .ps-modal-close { display: none; }
       `;
 
       const html = `<!DOCTYPE html>
@@ -243,9 +261,9 @@ const Canvas = (() => {
       case 'page':
         return ` onclick="window.parent.PullStackPreview && window.parent.PullStackPreview.gotoPage('${target}')"`;
       case 'open-modal':
-        return ` onclick="var m=document.getElementById('${target}');if(m){m.style.display='flex';}"`;
+        return ` onclick="var m=document.getElementById('${target}');if(m){if(m.hasAttribute('data-ps-modal-wrap'))m.classList.add('ps-showing');else m.style.display='flex';}"`;
       case 'close-modal':
-        return ` onclick="var m=document.getElementById('${target}');if(m){m.style.display='none';}"`;
+        return ` onclick="var m=document.getElementById('${target}');if(m){if(m.hasAttribute('data-ps-modal-wrap'))m.classList.remove('ps-showing');else m.style.display='none';}"`;
       case 'toggle':
         return ` onclick="var el=document.getElementById('${target}');if(el){el.style.display=el.style.display==='none'?'':'none';}"`;
       case 'scroll':
@@ -308,10 +326,11 @@ const Canvas = (() => {
       case 'modal': {
         const children = (el.children || []).map(c => renderElementHtml(c)).join('');
         const modalCls = cssDefs.modal || '';
+        const modalId = escape(p.modalId || '');
         inner = `
-          <div data-ps-modal-wrap style="margin:16px 0;padding:0;border:2px dashed rgba(192,132,252,0.5);border-radius:10px;background:rgba(192,132,252,0.04);">
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(192,132,252,0.15);border-radius:8px 8px 0 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#c084fc;">
-              <span>🪟 Modal · id="${escape(p.modalId || '')}"</span>
+          <div data-ps-modal-wrap id="${modalId}" style="margin:16px 0;padding:0;border:2px dashed rgba(192,132,252,0.5);border-radius:10px;background:#fff;">
+            <div class="ps-modal-chrome" style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(192,132,252,0.15);border-radius:8px 8px 0 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#c084fc;">
+              <span>🪟 Modal · id="${modalId}"<span class="ps-modal-close" onclick="this.closest('[data-ps-modal-wrap]').classList.remove('ps-showing')">✕</span></span>
               <span style="font-size:11px;font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7;">${escape(p.title || '')}</span>
             </div>
             <div class="ps-modal-body ${modalCls}" data-ps-container="${el.id}" style="padding:16px;min-height:60px;">${children}</div>
